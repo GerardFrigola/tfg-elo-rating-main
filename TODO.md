@@ -34,9 +34,10 @@
     - [] Preprocess de dades?
 - [] poo?
 
-### Sobre els avaluadors: 
+### Sobre validacioó: 
 - [] Implementar correlation coeficient --> Al final de cada tour
 - [] Alguna manera d'avaluar 
+- [] Fer servir fitxers atp_rankings per validar. 
 
 ### Sobre extres
 - [] Aprendre els factors modificables que millor vagin? --> Fumada però en un futur podria ser una bona implementació
