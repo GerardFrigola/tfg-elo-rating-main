@@ -2,8 +2,10 @@ import pandas as pd
 import os
 from entities import Match, Player
 
+def load_players() -> None:
+    pass
 
-def load_match(path):
+def create_match(path):
     match_df = pd.read_csv(path)
     # TODO: guardar la info en un objecte match
     return match_df[[
@@ -32,8 +34,10 @@ def load_match(path):
 
 def load_tour(atp_matches: os.Path) -> None:
     """
-    Carregar la info de tots els matches d'un fitxer tipus 'atp_matches_2019.csv' i els fica en un dataframe de matches. 
+    Carregar la info de tots els matches d'un fitxer tipus 'atp_matches_2019.csv' crea un Match per cada fila, i va guardant tots els Match en un Tour.
     """
     file = pd.read_csv(atp_matches)
     
+    # 1. Per cada fila de 'file' crida create_match() 
+
     pass

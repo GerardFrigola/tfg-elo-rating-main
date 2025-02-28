@@ -6,9 +6,10 @@
 ### Sobre tenis:
 - [] Aprendre sobre tenis
     - [] Saber els tipus de tornejos que hi ha
-    - [] Saber com funciona un any sencer de tenis. Qualifiers, tornejos, ranquings, etc. 
+    - [] Saber com funciona un any sencer de tenis (tour?). Qualifiers, tornejos, ranquings, etc. 
     - [] Aprendre i entendre els rànquings
     - [] Entendre bé que son els swings
+    - [] Quant dura normalment un torneig?
 
 # Sobre git: 
 - [] Crear docu llicència
