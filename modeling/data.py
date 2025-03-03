@@ -1,43 +1,48 @@
 import pandas as pd
 import os
-from entities import Match, Player
+from entities import Match, Player, Tour
 
-def load_players() -> None:
-    pass
 
-def create_match(path):
-    match_df = pd.read_csv(path)
-    # TODO: guardar la info en un objecte match
-    return match_df[[
-        'tourney_id', 
-        'tourney_name', 
-        'surface',
-        'draw_size',
-        'tourney_level',
-        'tourney_date',
-        'match_num', # a match-specific identifier. Often starting from 1, sometimes counting down from 300, and sometimes arbitrary. 
-        'score', 
-        'best_of', # 3 or 5 games
-        'round', 
-        'winner_rank',
-        'winner_rank_points',
-        'loser_rank',
-        'loser_rank_points',
-        'winner_id',
-        'winner_seed', # Seedings are used to separate the top players in a draw so that they will not meet in the early rounds of a tournament.
-        'winner_entry', # it determines whether a player has a sufficiently high ranking to gain direct acceptance into the main draw of a tournament.
-        'winner_name',
-        'loser_id',
-        'loser_seed', 
-        'loser_entry',
-        'loser_name']]
-
-def load_tour(atp_matches: os.Path) -> None:
+def load_tour_from_csv(file_path: str) -> Tour:
     """
-    Carregar la info de tots els matches d'un fitxer tipus 'atp_matches_2019.csv' crea un Match per cada fila, i va guardant tots els Match en un Tour.
+    Reads a CSV file and creates a Tour object containing all matches.
+
+    Args:
+        file_path (str): Path to the CSV file.
+
+    Returns:
+        Tour: An instance of Tour containing a list of Match objects.
     """
-    file = pd.read_csv(atp_matches)
     
-    # 1. Per cada fila de 'file' crida create_match() 
+    df = pd.read_csv(file_path)
 
-    pass
+    matches = []
+    players = {}  # Dictionary to store Player objects to avoid duplicates
+
+    for _, row in df.iterrows():
+        winner_id = row["winner_id"]
+        loser_id = row["loser_id"]
+
+        # Get or create the Player objects
+        if winner_id not in players:
+            players[winner_id] = Player(winner_id, row["winner_name"], 0, None)  # Default ELO rating 0
+        if loser_id not in players:
+            players[loser_id] = Player(loser_id, row["loser_name"], 0, None)
+
+        match = Match(
+            tourney_id=row["tourney_id"],
+            tourney_name=row["tourney_name"],
+            draw_size=row["draw_size"],
+            tourney_level=row["tourney_level"],
+            tourney_date=row["tourney_date"],
+            match_num=row["match_num"],
+            score=row["score"],
+            best_of=row["best_of"],
+            round=row["round"],
+            winner_id=winner_id,
+            loser_id=loser_id,
+        )
+
+        matches.append(match)
+
+    return Tour(matches, players, {})

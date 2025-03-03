@@ -3,16 +3,20 @@ import sys
 import pandas as pd
 import numpy as np
 from entities import Match, Player
+from data import load_tour_from_csv
 import argparse  # For command-line arguments (optional)
 
 
 def main():
-    matches2023 = read_match('../data/atp_matches/atp_matches_2023.csv') #type: ignore
-    fila = 880
-    wrp = matches2023['winner_rank_points'][fila]
-    lrp = matches2023['loser_rank_points'][fila]
-    wr, lr = compute_ratings(wrp, lrp, K=40, ksi=400) #type: ignore
-    print(f'Winner old: {wrp} points.\nWinner new: {wr} points. \n\nLoser old: {lrp}\nLoser new: {lr} points.')
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-y', required=True)
+    args = parser.parse_args()
+    
+    file_path = '../data/atp_matches/atp_matches_' + str(args.y) + '.csv'
+    tour = load_tour_from_csv(file_path)
+    tour.simulate_tour()
+    tour.print_ranking()
+
 
 if __name__ == "__main__":
     main()  # Runs the script when executed directly
