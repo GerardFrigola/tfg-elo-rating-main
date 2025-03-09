@@ -14,7 +14,7 @@ class Match():
         self.tourney_id = tourney_id 
         self.tourney_name = tourney_name
         self.draw_size = draw_size
-        self.tourney_level = tourney_level # 
+        self.tourney_level = tourney_level # G, F, D, M, A, C, S
         self.tourney_date = tourney_date
         self.match_id = str(tourney_id) + str(match_num) # a match-specific identifier. Often starting from 1, sometimes counting down from 300, and sometimes arbitrary. 
         self.score = score

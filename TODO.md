@@ -23,17 +23,19 @@
 ### Sobre paràmetres:
 - [] Determinar K-factor 
     - [] En funció de què val una cosa o una altra? (competi, ronda, best_of, )
-- [] Determinar H-factor
 - [] Determinar Logistic Parameter
 - [] Considerar altres paràmetres possibles
 
 ### Sobre implementació: 
 - [x] Codi fórmules bàsiques
-- [] Estructura general del projecte --> Anar definint
-- [] Estructura de les dades
-    - [] Quines dades necessito i quines no?
-    - [] Preprocess de dades?
-- [] poo?
+- [x] Estructura general del projecte --> Anar definint
+- [x] Estructura de les dades
+    - [x] Quines dades necessito i quines no?
+    - [x] Preprocess de dades?
+- [x] poo?
+- [] Afegir històric del rating
+- [] Fer ranking global sencer
+    - [] Determinar paràmetres en funció de si és ranking històric o ranking de tour. 
 
 ### Sobre validacioó: 
 - [] Implementar correlation coeficient --> Al final de cada tour

@@ -1,5 +1,6 @@
 import pandas as pd
 import os
+from pathlib import Path
 from entities import Match, Player, Tour
 
 
@@ -20,15 +21,17 @@ def load_tour_from_csv(file_path: str) -> Tour:
     players = {}  # Dictionary to store Player objects to avoid duplicates
 
     for _, row in df.iterrows():
+        # Obtenir id dels dos jugadors del partit
         winner_id = row["winner_id"]
         loser_id = row["loser_id"]
 
-        # Get or create the Player objects
+        # Crear els jugadors si encara no existeixen
         if winner_id not in players:
             players[winner_id] = Player(winner_id, row["winner_name"], 0, None)  # Default ELO rating 0
         if loser_id not in players:
             players[loser_id] = Player(loser_id, row["loser_name"], 0, None)
 
+        # Guardar la info del partit
         match = Match(
             tourney_id=row["tourney_id"],
             tourney_name=row["tourney_name"],
@@ -46,3 +49,26 @@ def load_tour_from_csv(file_path: str) -> Tour:
         matches.append(match)
 
     return Tour(matches, players, {})
+
+def load_all_tours(folder_path: str = '/Users/FRIGO/Desktop/Escriptori (MacBook Air)/MATCAD/5e/TFG/tfg-elo-rating-main/data') -> Tour: 
+    """
+    Llegeix tots els fitxers de tours i crea un objecte Tour amb tots els partits de la carpeta 'folder_path'.
+
+    Args: 
+        folder_path (str): Ruta a la carpeta que conté els tots fitxers CSV.
+
+    Returns: 
+        list[Tour]: Una llista que conté
+    """
+
+    all_tours = []
+
+    for subdir, dirs, files in os.walk(Path(folder_path)):
+        for file in files:
+            if file.endswith('.csv'):
+                file_path = os.path.join(subdir, file)
+                tour = load_tour_from_csv(file_path)
+                all_tours.extend(tour)
+
+    
+    return all_tours
