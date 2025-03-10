@@ -4,7 +4,7 @@ from pathlib import Path
 from entities import Match, Player, Tour
 
 
-def load_tour_from_csv(file_path: str) -> Tour:
+def load_tour_from_csv(file_path: str, tour: Tour = Tour(matches=[], players={}, ranking={})) -> Tour:
     """
     Reads a CSV file and creates a Tour object containing all matches.
 
@@ -14,11 +14,8 @@ def load_tour_from_csv(file_path: str) -> Tour:
     Returns:
         Tour: An instance of Tour containing a list of Match objects.
     """
-    
+    print(f'Loading matches from {file_path}')
     df = pd.read_csv(file_path)
-
-    matches = []
-    players = {}  # Dictionary to store Player objects to avoid duplicates
 
     for _, row in df.iterrows():
         # Obtenir id dels dos jugadors del partit
@@ -26,10 +23,10 @@ def load_tour_from_csv(file_path: str) -> Tour:
         loser_id = row["loser_id"]
 
         # Crear els jugadors si encara no existeixen
-        if winner_id not in players:
-            players[winner_id] = Player(winner_id, row["winner_name"], 0, None)  # Default ELO rating 0
-        if loser_id not in players:
-            players[loser_id] = Player(loser_id, row["loser_name"], 0, None)
+        if winner_id not in tour.players:
+            tour.players[winner_id] = Player(winner_id, row["winner_name"], 0, None)  # Default ELO rating 0
+        if loser_id not in tour.players:
+            tour.players[loser_id] = Player(loser_id, row["loser_name"], 0, None)
 
         # Guardar la info del partit
         match = Match(
@@ -46,9 +43,9 @@ def load_tour_from_csv(file_path: str) -> Tour:
             loser_id=loser_id,
         )
 
-        matches.append(match)
+        tour.matches.append(match)
 
-    return Tour(matches, players, {})
+    return tour
 
 def load_all_tours(folder_path: str = '/Users/FRIGO/Desktop/Escriptori (MacBook Air)/MATCAD/5e/TFG/tfg-elo-rating-main/data') -> Tour: 
     """
@@ -58,17 +55,18 @@ def load_all_tours(folder_path: str = '/Users/FRIGO/Desktop/Escriptori (MacBook 
         folder_path (str): Ruta a la carpeta que conté els tots fitxers CSV.
 
     Returns: 
-        list[Tour]: Una llista que conté
+        Tour(): Un objecte Tour que conté tots els partits de la carpeta 'folder_path'.
     """
 
-    all_tours = []
-
+    mega_tour = Tour(matches=[], players={}, ranking={})
+    
     for subdir, dirs, files in os.walk(Path(folder_path)):
-        for file in files:
+        for file in sorted(files[:-1]):
             if file.endswith('.csv'):
                 file_path = os.path.join(subdir, file)
-                tour = load_tour_from_csv(file_path)
-                all_tours.extend(tour)
-
+                print(file_path)
+                mega_tour = load_tour_from_csv(file_path, tour=mega_tour)
     
-    return all_tours
+
+
+    return mega_tour

@@ -76,7 +76,9 @@ class Tour():
 
 
     def simulate_tour(self) -> None: 
+        print(f'Simulating tour...\n {len(self.matches)} matches.')
         for match in self.matches:
+            print(f'Simulating match {match.match_id[4:]}...')
             winner = self.players[match.winner_id]
             loser = self.players[match.loser_id]
 
@@ -85,10 +87,13 @@ class Tour():
             self.update_elo_ratings(winner, loser)
             self.update_elo_ranking(winner, loser)
 
-    def print_ranking(self):
-        """Fa un print del ranking sencer un cop acabat el tour"""
-        print(f'{'Rank  Name':<25} {"Rating":>10}\n')  # Column headers with proper alignment
-
-        for rank, (player, rating) in enumerate(sorted(self.ranking.items(), key=lambda item: item[1], reverse=True), start=1): 
-            print(f'{rank}.  {player.name:<25} {rating:>10}')
+    def save_ranking(self) :
+        """
+        Guarda el ranking sencer un cop acabat el tour
+        """
+        with open('ranking.txt', 'w') as f:
+            f.write(f'{'Rank  Name':<25} {"Rating":>10}\n')  # Column headers with proper alignment
+            
+            for rank, (player, rating) in enumerate(sorted(self.ranking.items(), key=lambda item: item[1], reverse=True), start=1): 
+                f.write(f'{rank}.  {player.name:<25} {rating:>10}')
             

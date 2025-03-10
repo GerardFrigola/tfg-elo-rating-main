@@ -33,6 +33,7 @@
     - [x] Quines dades necessito i quines no?
     - [x] Preprocess de dades?
 - [x] poo?
+- [] Vectoritzar llegir els csv amb pandas.
 - [] Afegir històric del rating
 - [] Fer ranking global sencer
     - [] Determinar paràmetres en funció de si és ranking històric o ranking de tour. 
