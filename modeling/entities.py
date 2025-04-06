@@ -1,4 +1,5 @@
 import datetime
+import matplotlib.pyplot as plt
 
 
 class Player():
@@ -9,6 +10,9 @@ class Player():
         self.elo_rating = 0
         self.elo_rank: int = None
         self.elo_history = {}  # Dict to store ranking history: {tourney_date: ranking aftermatch}
+        self.n_games = 0  # Number of games played
+        self.n_wins = 0
+        self.n_losses = 0
 
         #Surface elo ratings and ranks
         self.elo_surf_rating = {'Hard': 0.0, 'Clay': 0.0, 'Carpet': 0.0, 'Grass': 0.0, 'Unknown': 0.0}
@@ -44,23 +48,24 @@ class Tour():
                  matches:list[Match]=[], 
                  players:dict[int, Player]={}, 
                  ranking: dict[Player, int]={}, # TODO: Que la clau sigui l'id i no la classe sencera. 
-                 surf_ranking: dict[str, dict[Player, int]]={'Hard': {}, 'Clay': {}, 'Carpet': {}, 'Grass':{}, 'Unknown':{}}
+                 surf_ranking: dict[str, dict[Player, int]]={'Hard': {}, 'Clay': {}, 'Carpet': {}, 'Grass':{}, 'Unknown':{}},
+                 k:any=24, xi:int=400, s:str='delta'
                 ) -> None:
         self.matches = matches 
         self.players = players
         self.ranking = ranking
         self.surf_ranking = surf_ranking
+        self.k = k 
+        self.xi = xi
+        self.s = s
 
     def update_elo_ratings(self, winner:Player, loser:Player, tourney_date, surface) -> None: # a l'atp els ranquings d'actualitzen després de cada torneig, NO després de cada partit
         """
         Mètode per actualitzar els elo ratings dels jugadors d'un partit.
         """
-        assert surface in ['Grass', 'Clay', 'Carpet', 'Hard', 'Unknown'], f'Surface {surface} not suported. {tourney_date}'
         
-        # TODO: Decidir d'on treiem els paràmetres, de moment fixats
-        # TODO: Canviar l'score (Sw, Sl) perquè depengui del resultat del partit
-        ksi = 400
-        K = 50
+        xi = self.xi
+        k = self.k
         Sw = 1 
         Sl = 0
 
@@ -77,25 +82,49 @@ class Tour():
         d_sw = old_swr - old_slr
         d_sl = old_slr - old_swr
 
-        mu_w = 1 / (1 + pow(10, -d_w/ksi))
-        mu_l = 1 / (1 + pow(10, -d_l/ksi))
+        mu_w = 1 / (1 + pow(10, -d_w/xi))
+        mu_l = 1 / (1 + pow(10, -d_l/xi))
         # Surface
-        mu_sw = 1 / (1 + pow(10, -d_sw/ksi))
-        mu_sl = 1 / (1 + pow(10, -d_sl/ksi))
+        mu_sw = 1 / (1 + pow(10, -d_sw/xi))
+        mu_sl = 1 / (1 + pow(10, -d_sl/xi))
 
         # Actualitzar els valors dels elo-ratings dels jugadors.
-        winner.elo_rating = round(old_wr + K*(Sw - mu_w), 3)
-        loser.elo_rating = round(old_lr + K*(Sl - mu_l), 3)
+        winner.elo_rating = round(old_wr + k*(Sw - mu_w), 3)
+        loser.elo_rating = round(old_lr + k*(Sl - mu_l), 3)
         # Surface
-        winner.elo_surf_rating[surface] = round(old_swr + K*(Sw - mu_sw), 3)
-        loser.elo_surf_rating[surface] = round(old_slr + K*(Sl - mu_sl), 3)
+        winner.elo_surf_rating[surface] = round(old_swr + k*(Sw - mu_sw), 3)
+        loser.elo_surf_rating[surface] = round(old_slr + k*(Sl - mu_sl), 3)
         
         winner.elo_history[tourney_date] = winner.elo_rating
         loser.elo_history[tourney_date] = loser.elo_rating
         # Surface
         winner.elo_surf_history[surface][tourney_date] = winner.elo_surf_rating[surface]
         loser.elo_surf_history[surface][tourney_date] = loser.elo_surf_rating[surface]
+
+        winner.n_games += 1
+        loser.n_games += 1
+        winner.n_wins += 1
+        loser.n_losses += 1
         
+        surfaces = ['Hard', 'Clay', 'Carpet', 'Grass', 'Unknown']
+        surfaces.remove(surface)
+        
+        # Other surfaces stay the same rating for both players
+        for s in surfaces: 
+            if winner.elo_surf_history[s]:
+                last_winner_date = max(winner.elo_surf_history[s]) 
+                last_winner_rating = winner.elo_surf_history[s][last_winner_date] 
+            else: # if history is empty, keep to 1200
+                last_winner_rating = 1200
+            winner.elo_surf_history[s][tourney_date] = last_winner_rating
+
+            if loser.elo_surf_history[s]:
+                last_loser_date = max(loser.elo_surf_history[s]) 
+                last_loser_rating = loser.elo_surf_history[s][last_loser_date] 
+            else: # if history is empty, keep to 1200
+                last_loser_rating = 1200
+            loser.elo_surf_history[s][tourney_date] = last_loser_rating
+   
 
     def update_elo_ranking(self, winner:Player, loser:Player, surface):
         # Update Elo rating in the dictionaries
@@ -118,46 +147,4 @@ class Tour():
                 player.elo_surf_rank[surface] = new_rank
 
 
-    def simulate_tour(self) -> None: 
-        print(f'Simulating tour...\n {len(self.matches)} matches.\n')
-        year = ''
-        for match in self.matches:
-            if year != match.match_id[:4]:
-                print(f'    Simulating year {match.match_id[:4]}...')
-                year = match.match_id[:4]
-
-            winner = self.players[match.winner_id]
-            loser = self.players[match.loser_id]
-            surface = match.surface
-            date = match.tourney_date
-            # TODO: Calcular aqui el score S
-
-            self.update_elo_ratings(winner, loser, date, surface)
-            self.update_elo_ranking(winner, loser, surface)
-
-    def save_ranking(self) :
-        """
-        Guarda el ranking sencer un cop acabat el tour
-        """
-        timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
-        filename = f'rankings_{timestamp}'
-
-        with open(f'./outputs/{filename}.txt', 'w') as f:
-            # Column headers with proper alignment
-            f.write(f'{'Rank'}  {'Name':>4} {"Rating":>30} {'H. Rank':>10} {"H. Rating":>4} {'Cl. Rank':>10} {"Cl. Rating":>4} {'Ca. Rank':>10} {"Ca. Rating":>4} {'G. Rank':>10} {"G. Rating":>4}\n')  
-            
-            for rank, (player, rating) in enumerate(sorted(self.ranking.items(), key=lambda item: item[1], reverse=True), start=1): 
-                hard_rating = player.elo_surf_rating['Hard']
-                hard_rank = player.elo_surf_rank['Hard']
-                clay_rating = player.elo_surf_rating['Clay']
-                clay_rank = player.elo_surf_rank['Clay']
-                carpet_rating = player.elo_surf_rating['Carpet']
-                carpet_rank = player.elo_surf_rank['Carpet']
-                grass_rating = player.elo_surf_rating['Grass']
-                grass_rank = player.elo_surf_rank['Grass']
-                
-
-                f.write(f'{rank}. {player.name:>4} {rating:>30} {hard_rank:>10}. {hard_rating:>4} {clay_rank:>10}. {clay_rating:>4} {carpet_rank:>10}. {carpet_rating:>4} {grass_rank:>10}. {grass_rating:>4} \n')
-
-            print(f'\nRanking saved to outputs/{filename}.txt')
-        
+      

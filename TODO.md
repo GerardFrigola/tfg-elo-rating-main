@@ -35,14 +35,15 @@
     - [x] Preprocess de dades?
 - [x] poo?
 - [] Vectoritzar llegir els csv amb pandas.
-- [] Afegir històric del rating
-- [] Fer ranking global sencer
+- [x] Afegir històric del rating
+- [x] Fer ranking global sencer
     - [] Determinar paràmetres en funció de si és ranking històric o ranking de tour. 
 - [] Inactivitat: Si una persona deixa de jugar fora del ranking. Però si torna que passa?
 - [] Implementar opcions dels paràmetres. 
     - [] Tots els partits valen igual
     - [] Variar en funció del torneig
     - [] Altres 
+- [] Que les funcions de simular i calcular no siguin de la classe Tour si no que rebin un tour com a argument. 
 - [] Veure el ranking en una data concreta. Que pugui anar avançant temporalment manualment el ranking (per exemple setmana a setmana)
 - [] Per pàgina web mirar paquet shiny per python.
 
@@ -53,3 +54,17 @@
 
 ### Sobre extres
 - [] Aprendre els factors modificables que millor vagin? --> Fumada però en un futur podria ser una bona implementació
+
+
+
+
+
+### Web: 
+ - [ ] Preprocessar les dades
+    - [ ] Importar dades de wta
+    - [x] Llegir totes les dades de wta i atp per separat i concatenar-les (per separat)
+    - [ ] Netejar les dades -> Filtrar les columnes que volem , fumarse 1968, assegurar not na, 
+
+- Escriure els paràmetres k, xi, s
+- calcular el rating 
+    - Intentar millorar l'eficiència d'això
