@@ -25,6 +25,7 @@
     - [] En funció de què val una cosa o una altra? (competi, ronda, best_of, )
 - [] Determinar Logistic Parameter
 - [] Considerar altres paràmetres possibles
+- [] Elo inicial quan entres?
 
 ### Sobre implementació: 
 - [x] Codi fórmules bàsiques
@@ -37,8 +38,15 @@
 - [] Afegir històric del rating
 - [] Fer ranking global sencer
     - [] Determinar paràmetres en funció de si és ranking històric o ranking de tour. 
+- [] Inactivitat: Si una persona deixa de jugar fora del ranking. Però si torna que passa?
+- [] Implementar opcions dels paràmetres. 
+    - [] Tots els partits valen igual
+    - [] Variar en funció del torneig
+    - [] Altres 
+- [] Veure el ranking en una data concreta. Que pugui anar avançant temporalment manualment el ranking (per exemple setmana a setmana)
+- [] Per pàgina web mirar paquet shiny per python.
 
-### Sobre validacioó: 
+### Sobre validació: 
 - [] Implementar correlation coeficient --> Al final de cada tour
 - [] Alguna manera d'avaluar 
 - [] Fer servir fitxers atp_rankings per validar. 

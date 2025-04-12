@@ -11,8 +11,9 @@ def main():
     #parser = argparse.ArgumentParser()
     #parser.add_argument('-y', required=True)
     #args = parser.parse_args()
-    
-    all_tours = load_all_tours('../data/atp_matches')
+    print('Loading all matches...')
+    all_tours = load_all_tours('data/atp_matches')
+    print(f'{len(all_tours.matches)} matches loaded.')
     # file_path = '../data/atp_matches/atp_matches_' + str(args.y) + '.csv'
     # tour = load_tour_from_csv(file_path)
     all_tours.simulate_tour()

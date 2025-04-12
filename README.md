@@ -38,7 +38,7 @@ A la carpeta `data` hi trobaràs tots els fitxers .csv amb la informació de dif
   - `atp_matches_amateur`: No la faig servir.
 
 
-A la carpeta `outputs`es guardaràn les sortides -> TODO
+A la carpeta `outputs`es guardaràn les sortides
 
 
 A la carpeta `config`hi ha els fitxers de configuració -> TODO
@@ -47,7 +47,7 @@ A la carpeta `config`hi ha els fitxers de configuració -> TODO
 
 Per executar el projecte assegura't de tenir totes les llibreries i dependències instal·lades i al terminal escriu la comanda: 
 
-`python ./main.py`
+`python ./modeling/main.py`
 
 De moment aquesta execució només genera un rànquing històric de tots els jugadors des de 1968 fins 2024, fent servir l'ELO rating. Aquesta informació es guarda en el fitxer `rankings.txt`
 

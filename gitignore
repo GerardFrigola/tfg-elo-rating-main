@@ -10,7 +10,7 @@
 /dist/
 
 # Ignore system files
-.DS_Store
+*.DS_Store
 Thumbs.db
 
 # Ignore logs and temporary files
@@ -29,3 +29,6 @@ Thumbs.db
 # Ignore package lock files
 package-lock.json
 yarn.lock
+
+# Ignore pychache
+*.pyc

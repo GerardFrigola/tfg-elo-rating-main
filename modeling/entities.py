@@ -1,3 +1,6 @@
+import datetime
+
+
 class Player():
     def __init__(self, id, name, elo_rating, elo_rank):
         self.id = id
@@ -76,9 +79,13 @@ class Tour():
 
 
     def simulate_tour(self) -> None: 
-        print(f'Simulating tour...\n {len(self.matches)} matches.')
+        print(f'Simulating tour...\n {len(self.matches)} matches.\n')
+        year = ''
         for match in self.matches:
-            print(f'Simulating match {match.match_id[4:]}...')
+            if year != match.match_id[:4]:
+                print(f'    Simulating year {match.match_id[:4]}...')
+                year = match.match_id[:4]
+
             winner = self.players[match.winner_id]
             loser = self.players[match.loser_id]
 
@@ -91,9 +98,14 @@ class Tour():
         """
         Guarda el ranking sencer un cop acabat el tour
         """
-        with open('ranking.txt', 'w') as f:
-            f.write(f'{'Rank  Name':<25} {"Rating":>10}\n')  # Column headers with proper alignment
+        timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
+        filename = f'rankings_{timestamp}'
+
+        with open(f'./outputs/{filename}.txt', 'w') as f:
+            f.write(f'{'Rank':<4}  {'Name':<30} {"Rating":>10}\n')  # Column headers with proper alignment
             
             for rank, (player, rating) in enumerate(sorted(self.ranking.items(), key=lambda item: item[1], reverse=True), start=1): 
-                f.write(f'{rank}.  {player.name:<25} {rating:>10}')
-            
+                f.write(f'{rank}{'.':<4} {player.name:<30} {rating:>10} \n')
+
+            print(f'\nRanking saved to outputs/{filename}.txt')
+        

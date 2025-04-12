@@ -14,7 +14,7 @@ def load_tour_from_csv(file_path: str, tour: Tour = Tour(matches=[], players={},
     Returns:
         Tour: An instance of Tour containing a list of Match objects.
     """
-    print(f'Loading matches from {file_path}')
+    print(f'    Loading matches from {file_path}')
     df = pd.read_csv(file_path)
 
     for _, row in df.iterrows():
@@ -47,7 +47,7 @@ def load_tour_from_csv(file_path: str, tour: Tour = Tour(matches=[], players={},
 
     return tour
 
-def load_all_tours(folder_path: str = '/Users/FRIGO/Desktop/Escriptori (MacBook Air)/MATCAD/5e/TFG/tfg-elo-rating-main/data') -> Tour: 
+def load_all_tours(folder_path: str = '../data') -> Tour: 
     """
     Llegeix tots els fitxers de tours i crea un objecte Tour amb tots els partits de la carpeta 'folder_path'.
 
@@ -60,13 +60,13 @@ def load_all_tours(folder_path: str = '/Users/FRIGO/Desktop/Escriptori (MacBook 
 
     mega_tour = Tour(matches=[], players={}, ranking={})
     
-    for subdir, dirs, files in os.walk(Path(folder_path)):
+    folder = Path(folder_path)
+
+    for subdir, dirs, files in os.walk(folder):
         for file in sorted(files[:-1]):
             if file.endswith('.csv'):
                 file_path = os.path.join(subdir, file)
-                print(file_path)
                 mega_tour = load_tour_from_csv(file_path, tour=mega_tour)
-    
 
 
     return mega_tour
