@@ -8,9 +8,14 @@ import argparse  # For command-line arguments (optional)
 
 
 def main():
-    #parser = argparse.ArgumentParser()
-    #parser.add_argument('-y', required=True)
-    #args = parser.parse_args()
+    # parser = argparse.ArgumentParser()
+    # parser.add_argument('-k', required=True)
+    # parser.add_argument('-xi', required=True)
+    # args = parser.parse_args()
+
+    # k = args.k
+    # xi = args.xi
+    
     print('Loading all matches...')
     all_tours = load_all_tours('data/atp_matches')
     print(f'{len(all_tours.matches)} matches loaded.')
