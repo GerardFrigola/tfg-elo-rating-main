@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 from entities import Match, Player, Tour
 
-def clean_data(df: pd.DataFrame):
+def clean_tour(df: pd.DataFrame):
 
     assert df["tourney_id"].isna().sum() == 0, f"tourney_id is NaN. Match: {df['tourney_id'].any()}"
     assert df['tourney_name'].isna().sum() == 0, f"tourney_name is NaN. Match: {df['tourney_id'].any()} "
@@ -22,7 +22,7 @@ def clean_data(df: pd.DataFrame):
 
     return df
 
-def load_tour_from_csv(file_path: str, tour: Tour, k:any, xi:int, s:str) -> Tour:
+def load_tour_from_csv(file_path: str, tour: Tour = Tour(matches=[], players={}, ranking={})) -> Tour:
     """
     Reads a CSV file and creates a Tour object containing all matches.
 
@@ -32,19 +32,9 @@ def load_tour_from_csv(file_path: str, tour: Tour, k:any, xi:int, s:str) -> Tour
     Returns:
         Tour: An instance of Tour containing a list of Match objects.
     """
-
     print(f'    Loading matches from {file_path}')
-
-    if not tour: 
-        tour = Tour(matches=[], players={}, ranking={})
-    
-    tour.k = k
-    tour.xi = xi
-    tour.s = s
-
     df = pd.read_csv(file_path)
-    df = clean_data(df)
-
+    df = clean_tour(df)
     for _, row in df.iterrows():
         # Obtenir id dels dos jugadors del partit
         winner_id = row["winner_id"]
@@ -52,7 +42,7 @@ def load_tour_from_csv(file_path: str, tour: Tour, k:any, xi:int, s:str) -> Tour
 
         # Crear els jugadors si encara no existeixen
         if winner_id not in tour.players:
-            tour.players[winner_id] = Player(winner_id, row["winner_name"])
+            tour.players[winner_id] = Player(winner_id, row["winner_name"])  # Default ELO rating 0
         if loser_id not in tour.players:
             tour.players[loser_id] = Player(loser_id, row["loser_name"])
 
@@ -76,7 +66,7 @@ def load_tour_from_csv(file_path: str, tour: Tour, k:any, xi:int, s:str) -> Tour
 
     return tour
 
-def load_all_tours(folder_path, k, xi, s) -> Tour: 
+def load_all_tours(folder_path: str = '../data') -> Tour: 
     """
     Llegeix tots els fitxers de tours i crea un objecte Tour amb tots els partits de la carpeta 'folder_path'.
 
@@ -87,8 +77,6 @@ def load_all_tours(folder_path, k, xi, s) -> Tour:
         Tour(): Un objecte Tour que conté tots els partits de la carpeta 'folder_path'.
     """
 
-    print('Loading all matches...')
-
     mega_tour = Tour()
     
     folder = Path(folder_path)
@@ -97,8 +85,7 @@ def load_all_tours(folder_path, k, xi, s) -> Tour:
         for file in sorted(files[:-1]):
             if file.endswith('.csv'):
                 file_path = os.path.join(subdir, file)
-                mega_tour = load_tour_from_csv(file_path=file_path, tour=mega_tour, k=k, xi=xi, s=s)
+                mega_tour = load_tour_from_csv(file_path, tour=mega_tour)
 
-    print(f'{len(mega_tour.matches)} matches loaded.')
 
     return mega_tour
