@@ -9,7 +9,7 @@ st.set_page_config(layout='wide')
 
 st.title('Elo Rating in Tennis')
 
-st.write('M\'agradaria que això surtis el primer de tot després del titol')
+st.write('Hola hola hola 19:27')
 
 st.write(f'Dir: {os.getcwd()}')
 
