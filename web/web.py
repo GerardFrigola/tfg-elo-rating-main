@@ -11,7 +11,7 @@ st.title('Elo Rating in Tennis')
 
 st.write('Hola hola hola 19:27')
 
-st.write(f'Dir: {os.getcwd()}')
+st.write(f'Dir: {os.listdir()}')
 
 data = pd.read_csv('web/web_data/all_data.csv')
 
