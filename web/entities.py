@@ -11,9 +11,9 @@ class Player():
         self.elo_history = {}  # Dict to store ranking history: {tourney_date: ranking aftermatch}
 
         #Surface elo ratings and ranks
-        self.elo_surf_rating = {'Hard': 0.0, 'Clay': 0.0, 'Carpet': 0.0, 'Grass': 0.0, 'Unknown': 0.0}
-        self.elo_surf_rank = {'Hard': 0, 'Clay': 0, 'Carpet': 0, 'Grass': 0, 'Unknown': 0}
-        self.elo_surf_history = {'Hard': {}, 'Clay': {}, 'Carpet': {}, 'Grass': {}, 'Unknown':{}}  # Dict to store ranking history
+        self.elo_surf_rating: dict = {'Hard': 0.0, 'Clay': 0.0, 'Carpet': 0.0, 'Grass': 0.0, 'Unknown': 0.0}
+        self.elo_surf_rank: dict = {'Hard': 0, 'Clay': 0, 'Carpet': 0, 'Grass': 0, 'Unknown': 0}
+        self.elo_surf_history: dict = {'Hard': {}, 'Clay': {}, 'Carpet': {}, 'Grass': {}, 'Unknown':{}}  # Dict to store ranking history
 
 
 class Match():
@@ -39,17 +39,25 @@ class Tour():
     """
     Classe que conté una llista de tots els partits d'un tour, en principi un any sencer
     Un objecte Tour en principi equivaldrà a un fitxer atp_matches_year.csv
+
+    Attributes:
+        matches: list[Match]
+        players: dict[player_id:int, Player]
+        ranking: dict[player_id:int, elo_rating:float]
+        surf_ranking: dict[surface:str, dict[player_id:int, elo_rating:float]]
+
     """
+
     def __init__(self, 
                  matches:list[Match]=[], 
                  players:dict[int, Player]={}, 
-                 ranking: dict[Player, int]={}, # TODO: Que la clau sigui l'id i no la classe sencera. 
-                 surf_ranking: dict[str, dict[Player, int]]={'Hard': {}, 'Clay': {}, 'Carpet': {}, 'Grass':{}, 'Unknown':{}}
+                 ranking: dict[int, int]={}, # TODO: Que la clau sigui l'id i no la classe sencera. FET!
+                 surf_ranking: dict[str, dict[int, int]]={'Hard': {}, 'Clay': {}, 'Carpet': {}, 'Grass':{}, 'Unknown':{}}
                 ) -> None:
         self.matches = matches 
         self.players = players
         self.ranking = ranking
-        self.surf_ranking = surf_ranking
+        self.surf_ranking = surf_ranking 
 
     def update_elo_ratings(self, winner:Player, loser:Player, tourney_date, surface) -> None: # a l'atp els ranquings d'actualitzen després de cada torneig, NO després de cada partit
         """
@@ -99,65 +107,24 @@ class Tour():
 
     def update_elo_ranking(self, winner:Player, loser:Player, surface):
         # Update Elo rating in the dictionaries
-        self.ranking[winner] = winner.elo_rating
-        self.ranking[loser] = loser.elo_rating
-        self.surf_ranking[surface][winner] = winner.elo_surf_rating[surface]
-        self.surf_ranking[surface][loser] = loser.elo_surf_rating[surface]
+        winner_id = winner.id
+        loser_id = loser.id
+        
+        self.ranking[winner_id] = self.players[winner_id].elo_rating
+        self.ranking[loser_id] = self.players[loser_id].elo_rating
+        self.surf_ranking[surface][winner_id] = self.players[winner_id].elo_surf_rating[surface]
+        self.surf_ranking[surface][loser_id] = self.players[loser_id].elo_surf_rating[surface]
 
-        # Get the sorted list of players (keeping original order in a list to avoid re-sorting everyone)
-        sorted_players = sorted(self.ranking.keys(), key=lambda p: self.ranking[p], reverse=True)
-        sorted_players_surf = sorted(self.surf_ranking[surface].keys(), key=lambda p: self.surf_ranking[surface][p], reverse=True)
+        # Get the sorted list of players ids (keeping original order in a list to avoid re-sorting everyone)
+        sorted_players_ids = sorted(self.ranking.keys(), key=lambda p_id: self.ranking[p_id], reverse=True)
+        sorted_players_surf_ids = sorted(self.surf_ranking[surface].keys(), key=lambda p_id: self.surf_ranking[surface][p_id], reverse=True)
 
         # Update ranks only if necessary
-        for new_rank, player in enumerate(sorted_players, start=1):
-            if player.elo_rank != new_rank:
-                player.elo_rank = new_rank  # Update player's rank
+        for new_rank, player_id in enumerate(sorted_players_ids, start=1):
+            if self.players[player_id].elo_rank != new_rank:
+                self.players[player_id].elo_rank = new_rank  # Update player's rank
 
-        for new_rank, player in enumerate(sorted_players_surf, start=1): 
-            if player.elo_surf_rank[surface] != new_rank:
-                player.elo_surf_rank[surface] = new_rank
+        for new_rank, player_id in enumerate(sorted_players_surf_ids, start=1): 
+            if self.players[player_id].elo_surf_rank[surface] != new_rank:
+                self.players[player_id].elo_surf_rank[surface] = new_rank
 
-
-    def simulate_tour(self) -> None: 
-        print(f'Simulating tour...\n {len(self.matches)} matches.\n')
-        year = ''
-        for match in self.matches:
-            if year != match.match_id[:4]:
-                print(f'    Simulating year {match.match_id[:4]}...')
-                year = match.match_id[:4]
-
-            winner = self.players[match.winner_id]
-            loser = self.players[match.loser_id]
-            surface = match.surface
-            date = match.tourney_date
-            # TODO: Calcular aqui el score S
-
-            self.update_elo_ratings(winner, loser, date, surface)
-            self.update_elo_ranking(winner, loser, surface)
-
-    def save_ranking(self) :
-        """
-        Guarda el ranking sencer un cop acabat el tour
-        """
-        timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
-        filename = f'rankings_{timestamp}'
-
-        with open(f'./outputs/{filename}.txt', 'w') as f:
-            # Column headers with proper alignment
-            f.write(f'{'Rank'}  {'Name':>4} {"Rating":>30} {'H. Rank':>10} {"H. Rating":>4} {'Cl. Rank':>10} {"Cl. Rating":>4} {'Ca. Rank':>10} {"Ca. Rating":>4} {'G. Rank':>10} {"G. Rating":>4}\n')  
-            
-            for rank, (player, rating) in enumerate(sorted(self.ranking.items(), key=lambda item: item[1], reverse=True), start=1): 
-                hard_rating = player.elo_surf_rating['Hard']
-                hard_rank = player.elo_surf_rank['Hard']
-                clay_rating = player.elo_surf_rating['Clay']
-                clay_rank = player.elo_surf_rank['Clay']
-                carpet_rating = player.elo_surf_rating['Carpet']
-                carpet_rank = player.elo_surf_rank['Carpet']
-                grass_rating = player.elo_surf_rating['Grass']
-                grass_rank = player.elo_surf_rank['Grass']
-                
-
-                f.write(f'{rank}. {player.name:>4} {rating:>30} {hard_rank:>10}. {hard_rating:>4} {clay_rank:>10}. {clay_rating:>4} {carpet_rank:>10}. {carpet_rating:>4} {grass_rank:>10}. {grass_rating:>4} \n')
-
-            print(f'\nRanking saved to outputs/{filename}.txt')
-        

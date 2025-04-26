@@ -1,14 +1,15 @@
 import pandas as pd
 import streamlit as st
 from entities import Player, Match, Tour
-from utils import simulate_tour, save_ranking
-
+from utils import load_tour_from_csv, simulate_tour, save_ranking_to_df
+from time import time, sleep
 st.set_page_config(layout='wide')
 
-
-data = pd.read_csv('web_data/all_data.csv')
-
 st.title('Elo Rating in Tennis')
+
+st.write('M\'agradaria que això surtis el primer de tot després del titol')
+         
+data = pd.read_csv('web_data/all_data.csv')
 
 k = st.number_input('Input K-factor: (must be an integer)', min_value=1, max_value=200, step=1, value=24, placeholder='Enter a integer')
 
@@ -21,7 +22,25 @@ if not year_list:
 else:
     st.write(data[data['match_year'].isin(year_list)])
 
-st.write('Elo ratings:')
-all_atp_tours = load_all_tours('data/atp_matches')
-all_atp_tours = simulate_tour(all_atp_tours, k , xi, s)
-st.progress(0)
+# --- Tour loading ---
+all_atp_tours = None
+if 'all_atp_tours' not in st.session_state:
+    st.session_state.all_atp_tours = None  # Initialize it as None
+
+if st.button('Load all matches'):
+    st.session_state.all_atp_tours = load_tour_from_csv('web_data/all_data.csv')
+    
+all_atp_tours = st.session_state.all_atp_tours
+if all_atp_tours:
+    st.write(f"Loaded {len(all_atp_tours.matches)} matches.")
+#------------------
+    
+if st.button('Run simulation'):  
+
+    simulate_tour(all_atp_tours)
+
+    ranking_df = save_ranking_to_df(all_atp_tours)
+
+    st.write(ranking_df)
+
+
