@@ -1,10 +1,13 @@
 import os
 import sys
 import pandas as pd
-import numpy as np
-from entities import Match, Player
-from data import load_all_tours, load_tour_from_csv
-import argparse  # For command-line arguments (optional)
+import numpy as np 
+import streamlit as st
+import argparse 
+from time import time
+
+from entities import Match, Player, Tour
+from utils import load_tour_from_csv, load_tour_from_csv_parallel,  simulate_tour, save_ranking_to_df
 
 
 def main():
@@ -17,12 +20,14 @@ def main():
     # xi = args.xi
     
     print('Loading all matches...')
-    all_tours = load_all_tours('data/atp_matches')
-    print(f'{len(all_tours.matches)} matches loaded.')
-    # file_path = '../data/atp_matches/atp_matches_' + str(args.y) + '.csv'
-    # tour = load_tour_from_csv(file_path)
-    all_tours.simulate_tour()
-    all_tours.save_ranking()
+
+    all_atp_tours: Tour = load_tour_from_csv('web/web_data/all_data.csv')
+    
+    simulate_tour(all_atp_tours)
+
+    ranking_df = save_ranking_to_df(all_atp_tours)
+
+    ranking_df.to_csv('outputs/ranking.csv', index=False)
 
 
 if __name__ == "__main__":
