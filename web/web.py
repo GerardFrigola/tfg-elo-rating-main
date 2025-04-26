@@ -13,7 +13,7 @@ st.write('Hola hola hola 19:27')
 
 st.write(f'Dir: {os.getcwd()}')
 
-data = pd.read_csv('web_data/all_data.csv')
+data = pd.read_csv('web/web_data/all_data.csv')
 
 k = st.number_input('Input K-factor: (must be an integer)', min_value=1, max_value=200, step=1, value=24, placeholder='Enter a integer')
 
@@ -32,7 +32,7 @@ if 'all_atp_tours' not in st.session_state:
     st.session_state.all_atp_tours = None  # Initialize it as None
 
 if st.button('Load all matches'):
-    st.session_state.all_atp_tours = load_tour_from_csv('web_data/all_data.csv')
+    st.session_state.all_atp_tours = load_tour_from_csv('web/web_data/all_data.csv') # If run in local is 'web_data/all_data.csv' else 'web/web_data/all_data.csv'
     
 all_atp_tours = st.session_state.all_atp_tours
 if all_atp_tours:
