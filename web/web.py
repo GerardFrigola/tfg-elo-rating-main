@@ -3,12 +3,16 @@ import streamlit as st
 from entities import Player, Match, Tour
 from utils import load_tour_from_csv, simulate_tour, save_ranking_to_df
 from time import time, sleep
+import os
+
 st.set_page_config(layout='wide')
 
 st.title('Elo Rating in Tennis')
 
 st.write('M\'agradaria que això surtis el primer de tot després del titol')
-         
+
+st.write(f'Dir: {os.getcwd()}')
+
 data = pd.read_csv('web_data/all_data.csv')
 
 k = st.number_input('Input K-factor: (must be an integer)', min_value=1, max_value=200, step=1, value=24, placeholder='Enter a integer')
