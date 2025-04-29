@@ -5,21 +5,28 @@ from utils import load_tour_from_csv, simulate_tour, save_ranking_to_df
 from time import time, sleep
 import os
 
-st.set_page_config(layout='wide')
-
-st.title('Elo Rating in Tennis')
-
-st.write('Hola hola hola 19:27')
-
-st.write(f'Dir: {os.listdir()}')
-
+st.set_page_config(
+    page_title='Elo Rating in Tennis',
+    page_icon='🏆',
+    layout='wide',
+    initial_sidebar_state="expanded"
+)
+################################
+# Load data
 data = pd.read_csv('web/web_data/all_data.csv')
 
-k = st.number_input('Input K-factor: (must be an integer)', min_value=1, max_value=200, step=1, value=24, placeholder='Enter a integer')
+################################
+# Sidebar
+with st.sidebar:
+    st.title('Filtres')
 
-years = list(range(1970, 2025))
+    k = st.number_input('Input K-factor: (must be an integer)', min_value=1, max_value=200, step=1, value=24, placeholder='Enter a integer')
+    xi = st.number_input('Input xi: (must be a integer)', min_value=100, max_value=1000, step=1, value=400, placeholder='Enter a integer')
+    
+    years = list(range(1970, 2025))
+    year_list = st.multiselect('Select the year you want to see:', options=years)
 
-year_list = st.multiselect('Select the year you want to see:', options=years)
+
 
 if not year_list:
     st.write(data)
