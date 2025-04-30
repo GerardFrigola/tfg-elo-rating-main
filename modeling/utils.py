@@ -138,8 +138,6 @@ def load_tour_from_csv(file_path: str, tour: Tour = Tour(matches=[], players={},
     
     return tour
 
-
-
 def load_all_tours(folder_path: str = '../data') -> Tour: 
     """
     Llegeix tots els fitxers de tours i crea un objecte Tour amb tots els partits de la carpeta 'folder_path'.
@@ -164,28 +162,60 @@ def load_all_tours(folder_path: str = '../data') -> Tour:
     return mega_tour
 
 
-def simulate_tour(tour:Tour) -> None: 
+def simulate_tour(tour_df:pd.DataFrame, players:dict[str, dict[str:float]], k, ksi, s) -> None: 
+    assert tour_df.isna().sum().sum() == 0, f'nan values in tour_df\n{tour_df.isna().sum()}'
     start = time()
 
-    total_matches = len(tour.matches)
+    total_matches = len(tour_df)
     print(f'{total_matches} matches to simulate.\n')
     year = ''
 
-    for match in tour.matches:
-        if year != match.match_id[:4]:
-            print(f'    Simulating year {match.match_id[:4]}...')
-            year = match.match_id[:4]
+    for _, m in tour_df.iterrows():
+        if year != m['match_year']:
+            print(f'    Simulating year {m['match_year']}...')
+            year = m['match_year']
 
-        winner = tour.players[match.winner_id]
-        loser = tour.players[match.loser_id]
-        surface = match.surface
-        date = match.tourney_date
-        # TODO: Calcular aqui el score S
+        # Update elo ratings
+        Sw = 1
+        Sl = 0
 
-        tour.update_elo_ratings(winner, loser, date, surface)
-        tour.update_elo_ranking(winner, loser, surface)
+        # Algorisme per calcular elo-ratings
+        winner_id = m['winner_id']
+        loser_id = m['loser_id']
+        surface = f'elo_{m['surface'].lower()}_rating'
+
+        old_wr =  players[winner_id]['elo_rating']
+        old_lr = players[loser_id]['elo_rating']
+        # Surface
+        old_slr = players[winner_id][surface]
+        old_swr = players[loser_id][surface]
+
+        mu_w = 1 / (1 + pow(10, -(old_wr - old_lr)/ksi))
+        mu_l = 1 / (1 + pow(10, -(old_lr - old_wr)/ksi))
+        # Surface
+        mu_sw = 1 / (1 + pow(10, -(old_swr - old_slr)/ksi))
+        mu_sl = 1 / (1 + pow(10, -(old_slr - old_swr)/ksi))
+
+        # Actualitzar els valors dels elo-ratings dels jugadors. 
+        players[winner_id]['elo_rating'] = old_wr + k*(Sw - mu_w)
+        players[loser_id]['elo_rating'] = old_lr + k*(Sl - mu_l)
+        # Surface
+        players[winner_id][surface] = old_swr + k*(Sw - mu_sw)
+        players[loser_id][surface] = old_slr + k*(Sl - mu_sl)
+        
+        # TODO: Històric
+        # winner.elo_history[tourney_date] = winner.elo_rating
+        # loser.elo_history[tourney_date] = loser.elo_rating
+        # # Surface
+        # winner.elo_surf_history[surface][tourney_date] = winner.elo_surf_rating[surface]
+        # loser.elo_surf_history[surface][tourney_date] = loser.elo_surf_rating[surface]
+    
     end = time()
     print(f'Tour simulated. Time: {end-start:.2f}s {(end-start)/60:.2f}min\n')
+    print(f'Saving results')
+
+    # Save results
+    return players
 
 
 def save_ranking_to_df(tour:Tour) -> pd.DataFrame:
