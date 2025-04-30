@@ -13,7 +13,8 @@ st.set_page_config(
 )
 ################################
 # Load data
-data = pd.read_csv('web/web_data/all_data.csv')
+matches = pd.read_csv('web/web_data/all_data.csv')
+players = pd.read_csv('web/web_data/atp_players.csv')
 
 ################################
 # Sidebar
@@ -27,11 +28,10 @@ with st.sidebar:
     year_list = st.multiselect('Select the year you want to see:', options=years)
 
 
-
 if not year_list:
-    st.write(data)
+    st.write(matches)
 else:
-    st.write(data[data['match_year'].isin(year_list)])
+    st.write(matches[matches['match_year'].isin(year_list)])
 
 # --- Tour loading ---
 all_atp_tours = None
