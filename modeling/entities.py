@@ -59,7 +59,7 @@ class Tour():
         self.ranking = ranking
         self.surf_ranking = surf_ranking 
 
-    def update_elo_ratings(self, winner:Player, loser:Player, tourney_date, surface, K=24, ksi=400, score='delta') -> None: # a l'atp els ranquings d'actualitzen després de cada torneig, NO després de cada partit
+    def update_elo_ratings(self, winner:Player, loser:Player, tourney_date, surface, k=24, ksi=400, score='delta') -> None: # a l'atp els ranquings d'actualitzen després de cada torneig, NO després de cada partit
         """
         Mètode per actualitzar els elo ratings dels jugadors d'un partit.
         """
@@ -99,8 +99,8 @@ class Tour():
         winner.elo_rating = round(old_wr + k*(Sw - mu_w), 3)
         loser.elo_rating = round(old_lr + k*(Sl - mu_l), 3)
         # Surface
-        winner.elo_surf_rating[surface] = round(old_swr + K*(Sw - mu_sw), 3)
-        loser.elo_surf_rating[surface] = round(old_slr + K*(Sl - mu_sl), 3)
+        winner.elo_surf_rating[surface] = round(old_swr + k*(Sw - mu_sw), 3)
+        loser.elo_surf_rating[surface] = round(old_slr + k*(Sl - mu_sl), 3)
         
         winner.elo_history[tourney_date] = winner.elo_rating
         loser.elo_history[tourney_date] = loser.elo_rating
