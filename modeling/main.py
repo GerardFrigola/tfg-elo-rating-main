@@ -28,7 +28,16 @@ def main():
 
     # Create the dictionary
     start = time()
-    players_dic = {player_id: {'player_id': player_id, 'elo_rating': 0, 'elo_clay_rating': 0, 'elo_hard_rating': 0, 'elo_grass_rating': 0, 'elo_carpet_rating': 0, 'elo_unknown_rating': 0} for player_id in players['player_id']}
+    players_dic = {player_id: {
+        'player_id': player_id, 
+        'elo_rating': 0, 
+        'elo_clay_rating': 0, 
+        'elo_hard_rating': 0, 
+        'elo_grass_rating': 0, 
+        'elo_carpet_rating': 0, 
+        'elo_unknown_rating': 0
+        } for player_id in players['player_id']}
+    
     print(f"Time to create players_dic: {time() - start:.2f} seconds")
 
     # players['elo_rating'] = pd.Series(initial_elo_rating*np.ones(len(players)))
@@ -42,9 +51,6 @@ def main():
 
     players_simulated = pd.DataFrame.from_dict(players_simulated_dic, orient='index')
 
-    print(players_simulated.columns)
-    print(players.columns)
-    exit(1)
     players = players.merge(players_simulated, how='left', on='player_id')\
         .sort_values(by='elo_rating', ascending=False)
     
