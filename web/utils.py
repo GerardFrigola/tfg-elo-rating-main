@@ -2,7 +2,7 @@ import pandas as pd
 import streamlit as st
 from time import time
 
-def simulate_tour(tour_df:pd.DataFrame, k, ksi, s, initial_elo): 
+def simulate_tour(tour_df:pd.DataFrame, players_df:pd.DataFrame, k, ksi, s, initial_elo): 
     assert tour_df.isna().sum().sum() == 0, f'nan values in tour_df\n{tour_df.isna().sum()}'
 
     players_dic = {player_id: {
@@ -13,7 +13,7 @@ def simulate_tour(tour_df:pd.DataFrame, k, ksi, s, initial_elo):
     'elo_grass_rating': initial_elo, 
     'elo_carpet_rating': initial_elo, 
     'elo_unknown_rating': initial_elo
-    } for player_id in players['player_id']}
+    } for player_id in players_df['player_id']}
 
     placeholder = st.empty()
     start = time()

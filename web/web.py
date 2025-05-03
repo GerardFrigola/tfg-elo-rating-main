@@ -10,10 +10,10 @@ st.set_page_config(
 )
 
 # Load data ------------------------
-matches = pd.read_csv('web/web_data/clean_atp_matches.csv')
-players = pd.read_csv('web/web_data/clean_atp_players.csv')
-assert matches.isna().sum().sum() == 0, f'nan values in matches\n{matches.isna().sum()}'
-assert players.isna().sum().sum() == 0, f'nan values in players\n{players.isna().sum()}'
+matches_df = pd.read_csv('web/web_data/clean_atp_matches.csv')
+players_df = pd.read_csv('web/web_data/clean_atp_players.csv')
+assert matches_df.isna().sum().sum() == 0, f'nan values in matches\n{matches_df.isna().sum()}'
+assert players_df.isna().sum().sum() == 0, f'nan values in players\n{players_df.isna().sum()}'
 
 # Functions -------------------------
     
@@ -44,7 +44,7 @@ st.title('Elo Rating in Tennis')
 st.subheader('Ranking')
 
 if run_simulation:
-    ranking = simulate_tour(matches, k, ksi, s, initial_elo)
+    ranking = simulate_tour(matches_df, players_df, k, ksi, s, initial_elo)
 
     if show_surfaces:
         st.write(ranking)
