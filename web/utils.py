@@ -119,5 +119,5 @@ def simulate_tour(tour_df:pd.DataFrame, players_df:pd.DataFrame, k, ksi, s, init
     elo_history_df = pd.DataFrame(elo_history_list)\
                         .astype({'date': 'datetime64[ns]'})
 
-
+    placeholder.empty()
     return ranking_filtered, elo_history_df

@@ -18,9 +18,8 @@ assert matches_df.isna().sum().sum() == 0, f'nan values in matches\n{matches_df.
 assert players_df.isna().sum().sum() == 0, f'nan values in players\n{players_df.isna().sum()}'
 
 # Functions -------------------------
-    
 def values_changed():
-    st.write('Values have changed. Click the "Run the simulation" button to see the new results.')
+    st.write('Values have changed. Click the "Run the simulation" button on the left sidebar to see the new results.')
 
 # Sidebar ---------------------------
 with st.sidebar:
@@ -36,9 +35,6 @@ with st.sidebar:
 
     run_simulation = st.button('Run simulation', key='run_simulation')
 
-
-
-
 # Main page -------------------------
 
 st.markdown("<h1 style='text-align: center; color: black;'>Elo Rating in Tennis</h1>", unsafe_allow_html=True)
@@ -49,7 +45,7 @@ if run_simulation:
 
     # last_game_date = datetime.strptime('2023-01-01', '%Y-%m-%d')
     # ranking_filtered = ranking[ranking['last_game'] >= '2023-01-01']
-    
+
     st.markdown("<h2 style='text-align: center; color: black;'>Ranking</h2>", unsafe_allow_html=True)
     st.write(ranking[
         ['First Name', 
@@ -69,6 +65,7 @@ if run_simulation:
 
     st.divider() # ----------------------------------
 
+    # Plots 
     st.markdown("<h2 style='text-align: center; color: black;'>Plots</h2>", unsafe_allow_html=True)
 
     # Histogram
