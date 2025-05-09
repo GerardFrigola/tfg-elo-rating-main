@@ -1,8 +1,8 @@
 # TODO
 
 - [] Crear docu llicència
-
 - [] Per pàgina web mirar paquet shine per python.
+- [] k variable en funcio del elo
 
 ### Sobre validació: 
 - [] Implementar correlation coeficient --> Al final de cada tour

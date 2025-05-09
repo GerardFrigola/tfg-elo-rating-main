@@ -10227,9 +10227,9 @@ player_id,First Name,Last Name,Hand,Country,Height
 110240,Fredrik,Samuelsson,R,UNK,0
 110241,Mike,Prineas,U,USA,0
 110242,R,Mayer,R,USA,0
-110243,X,Zhao,R,CHN,0
+110243,Desconegut,Zhao,R,CHN,0
 110244,Liu,Shuhua,R,CHN,0
-110245,X,Menn,R,TPE,0
+110245,Desconegut,Menn,R,TPE,0
 110246,Joe,Mesmer,R,USA,0
 110247,Colin,Mchugo,R,GBR,0
 110248,Harry,Turnbull,L,AUS,0
@@ -11801,7 +11801,7 @@ player_id,First Name,Last Name,Hand,Country,Height
 111815,Cameron,Norrie,L,GBR,188
 111816,Ali,Al Saygh,R,QAT,0
 111817,Frederick,Alexander,U,USA,0
-111818,X,Marsh,U,AUS,0
+111818,Desconegut,Marsh,U,AUS,0
 111819,Harry,Gibbes,U,AUS,0
 111820,J,Browne,U,AUS,0
 111821,Harry Alabaster,Parker,U,NZL,0
@@ -11816,11 +11816,11 @@ player_id,First Name,Last Name,Hand,Country,Height
 111830,Bill,Gregg,U,AUS,0
 111831,Percy Brereton,Colquhoun,U,AUS,0
 111832,Tony,Wilding,R,NZL,187
-111833,X,Neale,U,AUS,0
+111833,Desconegut,Neale,U,AUS,0
 111834,Irvine,Gaze,U,AUS,0
-111835,X,Murray,U,AUS,0
+111835,Desconegut,Murray,U,AUS,0
 111836,Ritchie,Eagle,U,AUS,0
-111837,X,Coombe,U,AUS,0
+111837,Desconegut,Coombe,U,AUS,0
 111838,R,Kelsey,U,AUS,0
 111839,I,Gibbs,U,AUS,0
 111840,Gerald,Odea,U,AUS,0
@@ -11855,20 +11855,20 @@ player_id,First Name,Last Name,Hand,Country,Height
 111869,W,Cleland,U,AUS,0
 111870,L,Mcdaniell,U,AUS,0
 111871,M,Plaistowe,U,AUS,0
-111872,X,Henville,U,AUS,0
+111872,Desconegut,Henville,U,AUS,0
 111873,P,Mills,U,AUS,0
-111874,X,Linwood,U,AUS,0
-111875,X,Fairbridge,U,AUS,0
+111874,Desconegut,Linwood,U,AUS,0
+111875,Desconegut,Fairbridge,U,AUS,0
 111876,N,Brearley,U,AUS,0
-111877,X,Sturm,U,UNK,0
+111877,Desconegut,Sturm,U,UNK,0
 111878,Rice Thomas Hopkins,Gemmell,U,AUS,0
 111879,Dudley,Cameron,U,AUS,0
 111880,E,Barker,U,AUS,0
-111881,X,Holliday,U,AUS,0
+111881,Desconegut,Holliday,U,AUS,0
 111882,Alf,Hedeman,U,AUS,0
-111883,X,Forsaith,U,AUS,0
+111883,Desconegut,Forsaith,U,AUS,0
 111884,W,Hayman,U,AUS,0
-111885,X,Mcgibbon,U,AUS,0
+111885,Desconegut,Mcgibbon,U,AUS,0
 111886,Norman,Mcdougall,U,AUS,0
 111887,R,Phillips,U,AUS,0
 111888,S,Davis,U,AUS,0
@@ -11904,17 +11904,17 @@ player_id,First Name,Last Name,Hand,Country,Height
 111918,Leonard,Bonnington,U,NZL,0
 111919,C,Moon,U,AUS,0
 111920,Henry,Turner,U,AUS,0
-111921,X,Nelson,U,AUS,0
+111921,Desconegut,Nelson,U,AUS,0
 111922,L,Terry,U,AUS,0
 111923,Leslie Garfield,Plane,U,AUS,0
 111924,W,Smith 2,U,USA,0
 111925,Fitzroy Bell,Cory,U,AUS,0
-111926,X,Wormall,U,AUS,0
+111926,Desconegut,Wormall,U,AUS,0
 111927,C,Ferguson,U,AUS,0
 111928,N,Green,U,AUS,0
 111929,Dr Harold Thorburn,Illingworth,U,AUS,0
 111930,Bert,St John,U,AUS,0
-111931,X,Ferrier,U,AUS,0
+111931,Desconegut,Ferrier,U,AUS,0
 111932,Lionel Emmanuel,Oxenham,U,AUS,0
 111933,E,Ladyman,U,AUS,0
 111934,J,Moran,U,AUS,0
@@ -12131,7 +12131,7 @@ player_id,First Name,Last Name,Hand,Country,Height
 112145,R,Nell,U,AUS,0
 112146,L,Darby,U,AUS,0
 112147,Austin,Storey,U,AUS,0
-112148,X,Pawsey,U,AUS,0
+112148,Desconegut,Pawsey,U,AUS,0
 112149,Lindsay,Todd,U,AUS,0
 112150,Harold,Penny,U,AUS,0
 112151,James,Oryan,U,AUS,0
@@ -12236,13 +12236,13 @@ player_id,First Name,Last Name,Hand,Country,Height
 112250,Robert,Swanston,U,AUS,0
 112251,W,Pearce,U,AUS,0
 112252,H,Brown,U,AUS,0
-112253,X,Turner,U,AUS,0
+112253,Desconegut,Turner,U,AUS,0
 112254,Murray,Graham,U,AUS,0
-112255,X,Bassett,U,AUS,0
+112255,Desconegut,Bassett,U,AUS,0
 112256,Wilfred H,Smith,U,GBR,0
 112257,G,Highett,U,AUS,0
 112258,Frank,Lendrum,U,AUS,0
-112259,X,Briggs,U,AUS,0
+112259,Desconegut,Briggs,U,AUS,0
 112260,R,Highett,U,AUS,0
 112261,John,Horan,U,AUS,0
 112262,Alan,Mccutcheon,U,AUS,0
@@ -12263,13 +12263,13 @@ player_id,First Name,Last Name,Hand,Country,Height
 112277,Fa,Jones,U,USA,0
 112278,Macauley,Turner,U,AUS,0
 112279,George,Crouch,U,AUS,0
-112280,X,Sayers,U,AUS,0
-112281,X,Allom,U,AUS,0
-112282,X,Gill,U,AUS,0
+112280,Desconegut,Sayers,U,AUS,0
+112281,Desconegut,Allom,U,AUS,0
+112282,Desconegut,Gill,U,AUS,0
 112283,N,Marsh,U,AUS,0
-112284,X,Fowles,U,AUS,0
+112284,Desconegut,Fowles,U,AUS,0
 112285,Ae,Turton,U,AUS,0
-112286,X,Kilgour,U,AUS,0
+112286,Desconegut,Kilgour,U,AUS,0
 112287,Geoff,Knox,U,AUS,0
 112288,Greg,Hughes,U,AUS,0
 112289,Bob,Mark,U,AUS,0
@@ -12666,7 +12666,7 @@ player_id,First Name,Last Name,Hand,Country,Height
 112680,Emil,Gabory Gabrowitz,U,HUN,0
 112681,Jacques J,Bonte,U,FRA,0
 112682,Mohammed,Sleem,U,IND,0
-112683,X,Nydis,U,UNK,0
+112683,Desconegut,Nydis,U,UNK,0
 112684,Laddie,Wheatcroft,U,GBR,0
 112685,Dan,Prenn,U,GER,0
 112686,Ladislav,Hecht,U,TCH,0
@@ -12716,7 +12716,7 @@ player_id,First Name,Last Name,Hand,Country,Height
 112730,R,Le Blant,U,FRA,0
 112731,Jacques,Arago,U,FRA,0
 112732,Augustos,Zerlendis,U,GRE,0
-112733,X,Olivares,U,ESP,0
+112733,Desconegut,Olivares,U,ESP,0
 112734,Max,Decugis,U,FRA,0
 112735,Jean Rene,Lacoste,U,FRA,175
 112736,Shashidri,Suvarna,U,UNK,0
@@ -12792,7 +12792,7 @@ player_id,First Name,Last Name,Hand,Country,Height
 112806,Robert,Laurent,U,FRA,0
 112807,R,Danon,U,EGY,0
 112808,Luis,Torralva Ponsa,U,CHI,0
-112809,X,Krishen,U,UNK,0
+112809,Desconegut,Krishen,U,UNK,0
 112810,Karl,Wetzel,U,GER,0
 112811,Jack,Condon,U,RSA,0
 112812,Sidney,Wood Jr,U,USA,0
@@ -12819,7 +12819,7 @@ player_id,First Name,Last Name,Hand,Country,Height
 112833,Etienne,Micard,U,FRA,0
 112834,Jacques,Samazeuilh,U,FRA,0
 112835,Pedro,Garriga Nogues,U,ESP,0
-112836,X,De Klazkowski,U,UNK,0
+112836,Desconegut,De Klazkowski,U,UNK,0
 112837,Hector,Chiesa,U,SUI,0
 112838,Heinrich,Kleinschroth,U,GER,0
 112839,Jean,Wuarin,U,SUI,0
@@ -12834,7 +12834,7 @@ player_id,First Name,Last Name,Hand,Country,Height
 112848,Max,Bally,U,GRE,0
 112849,George E,Lyttleton Rogers,U,IRL,0
 112850,Lucilo,Del Castillo,U,ARG,0
-112851,X,Gaston,U,FRA,0
+112851,Desconegut,Gaston,U,FRA,0
 112852,Li,Ingayo,U,UNK,0
 112853,Pierre,Grandguillot,U,EGY,0
 112854,Ody,Koopman,U,NED,0
@@ -12858,15 +12858,15 @@ player_id,First Name,Last Name,Hand,Country,Height
 112872,Fritz,Kuhlmann,U,GER,0
 112873,Alberto,Del Bono,U,ITA,0
 112874,H,Dannon,U,UNK,0
-112875,X,Espagnol,U,UNK,0
+112875,Desconegut,Espagnol,U,UNK,0
 112876,Nicolas,Magaloff,U,FRA,0
 112877,Dick,Covington,U,USA,0
 112878,John Sheldon,Olliff,U,GBR,0
-112879,X,Siedoff,U,UNK,0
+112879,Desconegut,Siedoff,U,UNK,0
 112880,Leopold,De Borman,U,BEL,0
 112881,A,Ernst,U,SUI,0
 112882,Ag,Rawlins,U,UNK,0
-112883,X,Landauer,U,UNK,0
+112883,Desconegut,Landauer,U,UNK,0
 112884,Hans,Moldenhauer,U,GER,0
 112885,N,Zahar,U,EGY,0
 112886,Edgar,Buchi,U,SUI,0
@@ -13289,7 +13289,7 @@ player_id,First Name,Last Name,Hand,Country,Height
 113303,Ferrante,Cavriani,U,ITA,0
 113304,E,Billeter,U,SUI,0
 113305,Colin J,Eedes,U,RSA,0
-113306,X,Dry,U,UNK,0
+113306,Desconegut,Dry,U,UNK,0
 113307,Michel,Poles,U,FRA,0
 113308,Annibale,Scotti,U,ITA,0
 113309,Hal,Surface,U,USA,0
@@ -13301,7 +13301,7 @@ player_id,First Name,Last Name,Hand,Country,Height
 113315,Robert D,Murray,U,CAN,0
 113316,Kay,Lund,U,GER,0
 113317,A,Ritossa,U,SUI,0
-113318,X,Le Hun Ly,U,UNK,0
+113318,Desconegut,Le Hun Ly,U,UNK,0
 113319,L,Wait,U,UNK,0
 113320,Peter,Witt,U,GBR,0
 113321,W,Patterson,U,UNK,0
@@ -14669,7 +14669,7 @@ player_id,First Name,Last Name,Hand,Country,Height
 114683,Frank,Benson,U,GBR,0
 114684,Md,Buckingham,U,GBR,0
 114685,Wm,Bird,U,GBR,0
-114686,X,Castor,U,GBR,0
+114686,Desconegut,Castor,U,GBR,0
 114687,Robert Wallace Glen Lee,Braddell,U,GBR,0
 114688,William John,Down,U,GBR,0
 114689,Thomas W,Gallwey,U,GBR,0
@@ -14687,7 +14687,7 @@ player_id,First Name,Last Name,Hand,Country,Height
 114701,Norman Leslie,Hallward,U,GBR,0
 114702,William Henry,Darby,U,GBR,0
 114703,Fh,Stokes,U,GBR,0
-114704,X,Pollux,U,GBR,0
+114704,Desconegut,Pollux,U,GBR,0
 114705,John,Wilkes,U,GBR,0
 114706,Hb,Porter,U,GBR,0
 114707,Frederick Brunning,Maddison,U,GBR,0
@@ -16453,7 +16453,7 @@ player_id,First Name,Last Name,Hand,Country,Height
 116467,Cornelius,Boocock,U,USA,0
 116468,T H S,Andrews,U,USA,0
 116469,Irving,Riker,U,USA,0
-116470,X,Fox,U,USA,0
+116470,Desconegut,Fox,U,USA,0
 116471,Ej,Newhouse,U,USA,0
 116472,George S,Mckearin,U,USA,0
 116473,Abraham,Bassford Jr,U,USA,0
@@ -16889,14 +16889,14 @@ player_id,First Name,Last Name,Hand,Country,Height
 116903,Ganson,Depew,U,USA,0
 116904,Harry Y,Gamble,U,CAN,0
 116905,Ga,Smith,U,USA,0
-116906,X,Edgar,U,USA,0
+116906,Desconegut,Edgar,U,USA,0
 116907,Ea,Manice,U,USA,0
-116908,X,Miller,U,USA,0
+116908,Desconegut,Miller,U,USA,0
 116909,Herbert Mason,Sears,U,USA,0
 116910,Crawford,Nightingale,U,USA,0
 116911,S H,Hooper,U,USA,0
-116912,X,Robbins,U,USA,0
-116913,X,Dinvilliers,U,USA,0
+116912,Desconegut,Robbins,U,USA,0
+116913,Desconegut,Dinvilliers,U,USA,0
 116914,Morgan G,Post,U,USA,0
 116915,Morton S,Paton,U,USA,0
 116916,Samuel,Shaw,U,USA,0
@@ -16924,12 +16924,12 @@ player_id,First Name,Last Name,Hand,Country,Height
 116938,Ac,Salt,U,USA,0
 116939,Ee,Denniston,U,USA,0
 116940,William,Gammell Jr,U,USA,0
-116941,X,Wharton,U,USA,0
+116941,Desconegut,Wharton,U,USA,0
 116942,Wh,Bucknall,U,USA,0
-116943,X,Johnson,U,UNK,0
+116943,Desconegut,Johnson,U,UNK,0
 116944,Jh,Powell,U,USA,0
 116945,Gm,Smith,U,USA,0
-116946,X,Williams,U,USA,0
+116946,Desconegut,Williams,U,USA,0
 116947,F,Eldridge,U,USA,0
 116948,M,Thomas,U,USA,0
 116949,Arthur Emden,Newbold,U,USA,0
@@ -16940,33 +16940,33 @@ player_id,First Name,Last Name,Hand,Country,Height
 116954,William E,Glyn,U,USA,0
 116955,Gc,Allen,U,USA,0
 116956,Fm,Carryll,U,USA,0
-116957,X,Boit,U,USA,0
+116957,Desconegut,Boit,U,USA,0
 116958,Thomas,Longwood,U,USA,0
 116959,Ts,Draper,U,USA,0
-116960,X,Roby,U,USA,0
-116961,X,Leroy,U,USA,0
-116962,X,Woodman,U,USA,0
+116960,Desconegut,Roby,U,USA,0
+116961,Desconegut,Leroy,U,USA,0
+116962,Desconegut,Woodman,U,USA,0
 116963,Ab,Malcolmson,U,USA,0
-116964,X,Rathbone,U,USA,0
-116965,X,Patton,U,USA,0
+116964,Desconegut,Rathbone,U,USA,0
+116965,Desconegut,Patton,U,USA,0
 116966,Rs,Codman,U,USA,0
 116967,Frank S,Benson,U,USA,0
 116968,Wh,Boardman,U,USA,0
-116969,X,Kneeland,U,USA,0
-116970,X,Leroy 2,U,USA,0
+116969,Desconegut,Kneeland,U,USA,0
+116970,Desconegut,Leroy 2,U,USA,0
 116971,??,Baillie,U,USA,0
-116972,X,Brown,U,USA,0
+116972,Desconegut,Brown,U,USA,0
 116973,Edward H,Gray,U,USA,0
-116974,X,Anderson,U,USA,0
-116975,X,Randolph,U,USA,0
-116976,X,Caldwell,U,USA,0
-116977,X,Hines,U,USA,0
-116978,X,Coggswell,U,USA,0
-116979,X,Congdon,U,USA,0
+116974,Desconegut,Anderson,U,USA,0
+116975,Desconegut,Randolph,U,USA,0
+116976,Desconegut,Caldwell,U,USA,0
+116977,Desconegut,Hines,U,USA,0
+116978,Desconegut,Coggswell,U,USA,0
+116979,Desconegut,Congdon,U,USA,0
 116980,El,Morse,U,USA,0
 116981,Fn,Saunders,U,USA,0
-116982,X,Kessler,U,USA,0
-116983,X,Pruyn,U,USA,0
+116982,Desconegut,Kessler,U,USA,0
+116983,Desconegut,Pruyn,U,USA,0
 116984,Alvaro,Ochoa,U,USA,0
 116985,Petr,Michnev,R,CZE,188
 116986,Rong,Ma,U,CHN,0
@@ -23345,7 +23345,7 @@ player_id,First Name,Last Name,Hand,Country,Height
 123359,Anacleto,Mapelli,U,ITA,0
 123360,Fabio,Hutter,U,SUI,0
 123361,Jiri,Lokaj,U,CZE,0
-123362,X,Svk Masters Unk,U,SVK,0
+123362,Desconegut,Svk Masters Unk,U,SVK,0
 123363,Juraj,Ciz,U,SVK,0
 123364,Jan,Francak,U,SVK,0
 123365,Jaroslav,Novak,U,SVK,0
@@ -51956,7 +51956,7 @@ player_id,First Name,Last Name,Hand,Country,Height
 151971,G S,Keyes,U,USA,0
 151972,Desconegut,Hogue,U,USA,0
 151973,T B,Brazelton,U,USA,0
-151974,X,Waring,U,USA,0
+151974,Desconegut,Waring,U,USA,0
 151975,Maskell,Fox,U,USA,0
 151976,Howard,Hoffmann,U,USA,0
 151977,A S,Chittenden,U,USA,0
@@ -54902,7 +54902,7 @@ player_id,First Name,Last Name,Hand,Country,Height
 202614,Desconegut,De Mattei,U,ARG,0
 202615,Desconegut,Ferrari,U,ARG,0
 202616,Octavio,Piva,U,BRA,0
-202617,X,Unknown,U,ARG,0
+202617,Desconegut,Unknown,U,ARG,0
 202618,Ismail,Gazarin,U,EGY,0
 202619,Chris,Burr,U,CAN,0
 202620,Jose,Villarete,U,PHI,0
@@ -56850,7 +56850,7 @@ player_id,First Name,Last Name,Hand,Country,Height
 204562,Len,Allen,R,USA,0
 204563,S,Anadian,R,IND,0
 204564,James,Yarbrough,R,USA,0
-204565,X,Pryadarsi,U,IND,0
+204565,Desconegut,Pryadarsi,U,IND,0
 204566,John,Mayotte,R,USA,0
 204567,Jim,Ratliff,U,UNK,0
 204568,Turner,Ragsdale,R,USA,0
