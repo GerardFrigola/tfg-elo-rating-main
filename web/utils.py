@@ -1,6 +1,7 @@
 import pandas as pd
 import streamlit as st
 import time
+import matplotlib.pyplot as plt
 
 def simulate_tour(tour_df:pd.DataFrame, players_df:pd.DataFrame, k, ksi, s, initial_elo, min_games): 
     assert tour_df.isna().sum().sum() == 0, f'nan values in tour_df\n{tour_df.isna().sum()}'
@@ -22,8 +23,8 @@ def simulate_tour(tour_df:pd.DataFrame, players_df:pd.DataFrame, k, ksi, s, init
     start = time.time()
 
     total_matches = len(tour_df)
+    placeholder.markdown(f"<h6 style='text-align: center; color: black;'>Simulant {total_matches} partits. Això hauria de trigar entre 10 i 20 segons.</h6>", unsafe_allow_html=True)
 
-    placeholder.write(f'Simulating {total_matches} matches...\n This should take between 10-20 seconds.')
     year = ''
     for _, m in tour_df.iterrows():
         
@@ -116,8 +117,85 @@ def simulate_tour(tour_df:pd.DataFrame, players_df:pd.DataFrame, k, ksi, s, init
 
     ranking_filtered = ranking[ranking['n_games']>min_games]
 
+    # TODO: Filtrar jugadors retirats.
+
     elo_history_df = pd.DataFrame(elo_history_list)\
                         .astype({'date': 'datetime64[ns]'})
 
     placeholder.empty()
     return ranking_filtered, elo_history_df
+
+
+def plot_elos_histogram(ranking, col2):
+    fig1, ax1 = plt.subplots(figsize=(10, 4.5))
+    elos = ranking['Elo Rating'].tolist()
+    ax1.hist(elos, bins=50)
+    ax1.set_title('Elo Rating Distribution')
+    ax1.set_xlabel('Elo Rating')
+    ax1.set_ylabel('Frequency')
+    col2.pyplot(fig1)
+
+
+def plot_elo_history_date(ranking, elo_history):
+    fig2, ax2 = plt.subplots(figsize=(10, 5))
+    ax2.set_title('Top 5 Players Elo History')
+    ax2.set_xlabel('Date')
+    ax2.set_ylabel('Elo Rating')
+
+    top_five = ranking.nlargest(5, 'Elo Rating')['player_id'].tolist()
+    top_five_elos = elo_history[elo_history['player_id'].isin(top_five)]#.sort_values(by=['date'])
+
+    for player_id in top_five:
+        player_elos = top_five_elos[top_five_elos['player_id'] == player_id]
+        name = ranking.loc[ranking['player_id'] == player_id, 'First Name'].values[0]
+        surname = ranking.loc[ranking['player_id'] == player_id, 'Last Name'].values[0]
+
+        ax2.plot(player_elos['date'], player_elos['elo_rating'], label=f'{name} {surname}')
+
+    ax2.legend()
+
+    st.pyplot(fig2)
+
+def plot_elo_history_ngames(ranking, elo_history):
+    fig3, ax3 = plt.subplots(figsize=(10, 5))
+    ax3.set_title('Top 5 Players Elo History')
+    ax3.set_xlabel('Number of Games')
+    ax3.set_ylabel('Elo Rating')
+
+    top_five = ranking.nlargest(5, 'Elo Rating')['player_id'].tolist()
+    top_five_elos = elo_history[elo_history['player_id'].isin(top_five)].sort_values(by=['date'])
+
+    for player_id in top_five:
+        player_elos = top_five_elos[top_five_elos['player_id'] == player_id]
+        name = ranking.loc[ranking['player_id'] == player_id, 'First Name'].values[0]
+        surname = ranking.loc[ranking['player_id'] == player_id, 'Last Name'].values[0]
+        n_games = ranking[ranking['player_id'] == player_id]['n_games'].values[0]
+        
+        ax3.plot(list(range(n_games)), player_elos['elo_rating'], label=f'{name} {surname}')
+
+    ax3.legend()
+
+    st.pyplot(fig3)
+
+def plot_elo_history_surface(ranking, elo_history, player_id):
+    fig4, ax4 = plt.subplots(figsize=(10, 5))
+    name = ranking.loc[ranking['player_id'] == player_id, 'First Name'].values[0]
+    surname = ranking.loc[ranking['player_id'] == player_id, 'Last Name'].values[0]
+    ax4.set_title(f'Històric de {name} {surname} per superfície')
+    ax4.set_xlabel('Superfície')
+    ax4.set_ylabel('Elo Rating')
+
+    player_elo_history = elo_history[elo_history['player_id'] == player_id].sort_values(by=['date'])
+
+    for surface in ['Clay', 'Hard', 'Grass', 'Carpet']:
+        surface_history = player_elo_history[player_elo_history['surface'] == surface]
+
+        ax4.plot(surface_history['date'], surface_history['elo_rating'], label=f'{surface}')
+
+    ax4.legend()
+
+    st.pyplot(fig4)
+
+
+def show_plots():
+    pass

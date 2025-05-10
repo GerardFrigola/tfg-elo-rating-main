@@ -1,194 +1,64 @@
 import pandas as pd
-import numpy as np 
-import datetime
 import streamlit as st
-import os
-from pathlib import Path
-from entities import Match, Player, Tour
-from time import time
-from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
+import time
+import matplotlib.pyplot as plt
 
-
-
-def clean_tour(df: pd.DataFrame):
-
-    assert df["tourney_id"].isna().sum() == 0, f"tourney_id is NaN. Match: {df['tourney_id'].any()}"
-    assert df['tourney_name'].isna().sum() == 0, f"tourney_name is NaN. Match: {df['tourney_id'].any()} "
-    # assert df['draw_size'].isna().sum() == 0, f"draw_size is NaN. Match: {df['tourney_id'].any()}"
-    assert df['tourney_level'].isna().sum() == 0, f"tourney_level is NaN. Match: {df['tourney_id'].any()}"
-    assert df['tourney_date'].isna().sum() == 0, f"tourney_date is NaN. Match: {df['tourney_id'].any()}"
-    assert df['match_num'].isna().sum() == 0, f"match_num is NaN. Match: {df['tourney_id'].any()}"
-    # assert df['score'].isna().sum() == 0, f"score is NaN. Match: {df['tourney_id'].any()}"
-    assert df['best_of'].isna().sum() == 0, f"best_of is NaN. Match: {df['tourney_id'].any()}"
-    assert df['round'].isna().sum() == 0, f"round is NaN. Match: {df['tourney_id'].any()}"
-    assert df['winner_id'].isna().sum() == 0, f"winner_id is NaN. Match: {df['tourney_id'].any()}"
-    assert df['loser_id'].isna().sum() == 0, f"loser_id is NaN"
-
-    df['surface'] = df['surface'].fillna('Unknown')
-    assert df['surface'].isna().sum() == 0, f"surface is NaN. Match: {df['tourney_id'].any()}"
-
-    return df
-
-
-def load_tour_from_csv_parallel(file_path: str, tour: Tour = Tour(matches=[], players={}, ranking={})) -> Tour:
-    # NO FUNCIONA, DONA ERRORSS
-    """
-    Reads a CSV file and creates a Tour object containing all matches.
-
-    Args:
-        file_path (str): Path to the CSV file.
-
-    Returns:
-        Tour: An instance of Tour containing a list of Match objects.
-    """
-    # start = time()
-    # df = pd.read_csv(file_path)
-    # df = clean_tour(df)
-
-    # # Càrrega de jugadors
-    # unique_players = pd.concat([df[['winner_id', 'winner_name']].rename(columns={'winner_id': 'player_id', 'winner_name': 'player_name'}),
-    #                             df[['loser_id', 'loser_name']].rename(columns={'loser_id': 'player_id', 'loser_name': 'player_name'})])
-    # unique_players = unique_players.drop_duplicates(subset='player_id')
-
-    # for _, row in unique_players.iterrows():
-    #     if row['player_id'] not in tour.players:
-    #         tour.players[row['player_id']] = Player(row['player_id'], row['player_name'])
-
-
-    # def create_match(row):
-    #     return Match(
-    #         tourney_id=row["tourney_id"],
-    #         tourney_name=row["tourney_name"],
-    #         draw_size=row["draw_size"],
-    #         surface=row['surface'],
-    #         tourney_level=row["tourney_level"],
-    #         tourney_date=row["tourney_date"],
-    #         match_num=row["match_num"],
-    #         score=row["score"],
-    #         best_of=row["best_of"],
-    #         round=row["round"],
-    #         winner_id=row["winner_id"],
-    #         loser_id=row["loser_id"],
-    #     )
-    
-    # def process_chunk(chunk):
-    #     return [create_match(row) for row in chunk.itertuples(index=False)]
-    
-    # chunks = np.array_split(df, 4)
-
-    
-    # with ThreadPoolExecutor() as executor:
-    #     results = executor.map(process_chunk, chunks)
-
-    # matches = [match for chunk in results for match in chunk]
-
-    # tour.matches.extend(matches)
-
-    # end = time()
-    # print(f'{len(tour.matches)} matches loaded. Time: {end - start:.2f}s \n')
-
-    # return tour
-
-def load_tour_from_csv(file_path: str, tour: Tour = Tour(matches=[], players={}, ranking={})) -> Tour:
-    """
-    Reads a CSV file and creates a Tour object containing all matches.
-
-    Args:
-        file_path (str): Path to the CSV file.
-
-    Returns:
-        Tour: An instance of Tour containing a list of Match objects.
-    """
-    start = time()
-
-    df = pd.read_csv(file_path)
-    df = clean_tour(df)
-
-    for _, row in df.iterrows():
-        # Obtenir id dels dos jugadors del partit
-        winner_id = row["winner_id"]
-        loser_id = row["loser_id"]
-
-        # Crear els jugadors si encara no existeixen
-        if winner_id not in tour.players:
-            tour.players[winner_id] = Player(winner_id, row["winner_name"])  # Default ELO rating 0
-        if loser_id not in tour.players:
-            tour.players[loser_id] = Player(loser_id, row["loser_name"])
-
-        # Guardar la info del partit
-        match = Match(
-            tourney_id=row["tourney_id"],
-            tourney_name=row["tourney_name"],
-            draw_size=row["draw_size"],
-            surface=row['surface'],
-            tourney_level=row["tourney_level"],
-            tourney_date=row["tourney_date"],
-            match_num=row["match_num"],
-            score=row["score"],
-            best_of=row["best_of"],
-            round=row["round"],
-            winner_id=winner_id,
-            loser_id=loser_id,
-        )
-
-        tour.matches.append(match)
-
-    end = time()
-    print(f'{len(tour.matches)} matches loaded. Time: {end-start:.2f}s. \n')
-    
-    return tour
-
-def load_all_tours(folder_path: str = '../data') -> Tour: 
-    """
-    Llegeix tots els fitxers de tours i crea un objecte Tour amb tots els partits de la carpeta 'folder_path'.
-
-    Args: 
-        folder_path (str): Ruta a la carpeta que conté els tots fitxers CSV.
-
-    Returns: 
-        Tour(): Un objecte Tour que conté tots els partits de la carpeta 'folder_path'.
-    """
-
-    mega_tour = Tour()
-    
-    folder = Path(folder_path)
-
-    for subdir, dirs, files in os.walk(folder):
-        for file in sorted(files[:-1]):
-            if file.endswith('.csv'):
-                file_path = os.path.join(subdir, file)
-                mega_tour = load_tour_from_csv(file_path, tour=mega_tour)
-
-    return mega_tour
-
-
-def simulate_tour(tour_df:pd.DataFrame, players:dict[str, dict[str:float]], k, ksi, s) -> None: 
+def simulate_tour(tour_df:pd.DataFrame, players_df:pd.DataFrame, k, ksi, s, initial_elo, min_games): 
     assert tour_df.isna().sum().sum() == 0, f'nan values in tour_df\n{tour_df.isna().sum()}'
-    start = time()
+
+    players_dic = {player_id: {
+    'player_id': player_id, 
+    'elo_rating': initial_elo, 
+    'elo_clay_rating': initial_elo, 
+    'elo_hard_rating': initial_elo, 
+    'elo_grass_rating': initial_elo, 
+    'elo_carpet_rating': initial_elo, 
+    'elo_unknown_rating': initial_elo,
+    'n_games': 0,
+    'last_game': 00000000
+    } for player_id in players_df['player_id']}
+
+    elo_history_list = []
+    placeholder = st.empty()
+    start = time.time()
 
     total_matches = len(tour_df)
-    print(f'{total_matches} matches to simulate.\n')
-    year = ''
+    placeholder.markdown(f"<h6 style='text-align: center; color: black;'>Simulant {total_matches} partits. Això hauria de trigar entre 10 i 20 segons.</h6>", unsafe_allow_html=True)
 
+    year = ''
     for _, m in tour_df.iterrows():
+        
         if year != m['match_year']:
-            print(f'    Simulating year {m['match_year']}...')
+            # placeholder.write(f'    Simulating year {m['match_year']}...')
             year = m['match_year']
 
         # Update elo ratings
-        Sw = 1
-        Sl = 0
+        match s:
+            case 'delta':
+                Sw = 1
+                Sl = 0
 
+            case 'thirds': 
+                if m['best_of'] != m['num_sets'] or m['best_of'] == 1:
+                    Sw = 1
+                    Sl = 0
+                else: 
+                    Sw = 2/3
+                    Sl = 1/3
+
+        
         # Algorisme per calcular elo-ratings
         winner_id = m['winner_id']
         loser_id = m['loser_id']
-        surface = f'elo_{m['surface'].lower()}_rating'
+        elo_surface = f'elo_{m['surface'].lower()}_rating'
+        match_date = m['tourney_date']
+        surface = m['surface']
 
-        old_wr =  players[winner_id]['elo_rating']
-        old_lr = players[loser_id]['elo_rating']
+        old_wr =  players_dic[winner_id]['elo_rating']
+        old_lr = players_dic[loser_id]['elo_rating']
         # Surface
-        old_slr = players[winner_id][surface]
-        old_swr = players[loser_id][surface]
+        old_slr = players_dic[winner_id][elo_surface]
+        old_swr = players_dic[loser_id][elo_surface]
 
         mu_w = 1 / (1 + pow(10, -(old_wr - old_lr)/ksi))
         mu_l = 1 / (1 + pow(10, -(old_lr - old_wr)/ksi))
@@ -197,43 +67,134 @@ def simulate_tour(tour_df:pd.DataFrame, players:dict[str, dict[str:float]], k, k
         mu_sl = 1 / (1 + pow(10, -(old_slr - old_swr)/ksi))
 
         # Actualitzar els valors dels elo-ratings dels jugadors. 
-        players[winner_id]['elo_rating'] = old_wr + k*(Sw - mu_w)
-        players[loser_id]['elo_rating'] = old_lr + k*(Sl - mu_l)
+        winner_new_elo = old_wr + k*(Sw - mu_w)
+        loser_new_elo = old_lr + k*(Sl - mu_l)
+        players_dic[winner_id]['elo_rating'] = winner_new_elo
+        players_dic[loser_id]['elo_rating'] = loser_new_elo
         # Surface
-        players[winner_id][surface] = old_swr + k*(Sw - mu_sw)
-        players[loser_id][surface] = old_slr + k*(Sl - mu_sl)
+        players_dic[winner_id][elo_surface] = old_swr + k*(Sw - mu_sw)
+        players_dic[loser_id][elo_surface] = old_slr + k*(Sl - mu_sl)
+
+        players_dic[loser_id]['n_games'] += 1
+        players_dic[loser_id]['last_game'] = match_date
+        players_dic[winner_id]['n_games'] += 1
+        players_dic[winner_id]['last_game'] = match_date
+
+        # Històric
+        winner_history = {
+            'player_id': winner_id,
+            'date': match_date,
+            'surface': surface,
+            'elo_rating': winner_new_elo
+        }
+        loser_history = {
+            'player_id': loser_id,
+            'date': match_date,
+            'surface': surface,
+            'elo_rating': loser_new_elo
+        }
+
+        elo_history_list.append(winner_history)
+        elo_history_list.append(loser_history)
+
+
+    players_simulated: pd.DataFrame = pd.DataFrame.from_dict(players_dic, orient='index')
+
+    ranking: pd.DataFrame = players_df.merge(players_simulated, how='left', on='player_id')\
+        .sort_values(by='elo_rating', ascending=False)\
+        .reset_index(drop=True)\
+        .drop(columns=['elo_unknown_rating'])\
+        .round(0)\
+        .rename(columns={
+            'elo_rating': 'Elo Rating', 
+            'elo_clay_rating': 'Clay Elo Rating', 
+            'elo_hard_rating': 'Hard Elo Rating', 
+            'elo_grass_rating': 'Grass Elo Rating', 
+            'elo_carpet_rating': 'Carpet Elo Rating'
+        })
+
+    ranking.index += 1
+
+    ranking_filtered = ranking[ranking['n_games']>min_games]
+
+    # TODO: Filtrar jugadors retirats.
+
+    elo_history_df = pd.DataFrame(elo_history_list)\
+                        .astype({'date': 'datetime64[ns]'})
+
+    placeholder.empty()
+    return ranking_filtered, elo_history_df
+
+
+def plot_elos_histogram(ranking, col2):
+    fig1, ax1 = plt.subplots(figsize=(10, 4.5))
+    elos = ranking['Elo Rating'].tolist()
+    ax1.hist(elos, bins=50)
+    ax1.set_title('Elo Rating Distribution')
+    ax1.set_xlabel('Elo Rating')
+    ax1.set_ylabel('Frequency')
+    col2.pyplot(fig1)
+
+
+def plot_elo_history_date(ranking, elo_history):
+    fig2, ax2 = plt.subplots(figsize=(10, 5))
+    ax2.set_title('Top 5 Players Elo History')
+    ax2.set_xlabel('Date')
+    ax2.set_ylabel('Elo Rating')
+
+    top_five = ranking.nlargest(5, 'Elo Rating')['player_id'].tolist()
+    top_five_elos = elo_history[elo_history['player_id'].isin(top_five)].sort_values(by=['date'])
+
+    for player_id in top_five:
+        player_elos = top_five_elos[top_five_elos['player_id'] == player_id]
+        name = ranking.loc[ranking['player_id'] == player_id, 'First Name'].values[0]
+        surname = ranking.loc[ranking['player_id'] == player_id, 'Last Name'].values[0]
+
+        ax2.plot(player_elos['date'], player_elos['elo_rating'], label=f'{name} {surname}')
+
+    ax2.legend()
+
+    st.pyplot(fig2)
+
+def plot_elo_history_ngames(ranking, elo_history):
+    fig3, ax3 = plt.subplots(figsize=(10, 5))
+    ax3.set_title('Top 5 Players Elo History')
+    ax3.set_xlabel('Number of Games')
+    ax3.set_ylabel('Elo Rating')
+
+    top_five = ranking.nlargest(5, 'Elo Rating')['player_id'].tolist()
+    top_five_elos = elo_history[elo_history['player_id'].isin(top_five)].sort_values(by=['date'])
+
+    for player_id in top_five:
+        player_elos = top_five_elos[top_five_elos['player_id'] == player_id]
+        name = ranking.loc[ranking['player_id'] == player_id, 'First Name'].values[0]
+        surname = ranking.loc[ranking['player_id'] == player_id, 'Last Name'].values[0]
+        n_games = ranking[ranking['player_id'] == player_id]['n_games'].values[0]
         
-        # TODO: Històric
-        # winner.elo_history[tourney_date] = winner.elo_rating
-        # loser.elo_history[tourney_date] = loser.elo_rating
-        # # Surface
-        # winner.elo_surf_history[surface][tourney_date] = winner.elo_surf_rating[surface]
-        # loser.elo_surf_history[surface][tourney_date] = loser.elo_surf_rating[surface]
-    
-    end = time()
-    print(f'Tour simulated. Time: {end-start:.2f}s {(end-start)/60:.2f}min\n')
-    print(f'Saving results')
+        ax3.plot(list(range(n_games)), player_elos['elo_rating'], label=f'{name} {surname}')
 
-    # Save results
-    return players
+    ax3.legend()
 
+    st.pyplot(fig3)
 
-def save_ranking_to_df(tour:Tour) -> pd.DataFrame:
-    """
-    Guarda el ranking sencer en un df un cop acabat el tour
-    """
-    start = time()
+def plot_elo_history_surface(ranking, elo_history, player_id):
+    fig4, ax4 = plt.subplots(figsize=(10, 5))
+    name = ranking.loc[ranking['player_id'] == player_id, 'First Name'].values[0]
+    surname = ranking.loc[ranking['player_id'] == player_id, 'Last Name'].values[0]
+    ax4.set_title(f'Històric de {name} {surname} per superfície')
+    ax4.set_xlabel('Superfície')
+    ax4.set_ylabel('Elo Rating')
 
-    sorted_ranking = dict(sorted(tour.ranking.items(), key=lambda item: item[1], reverse=True))
+    player_elo_history = elo_history[elo_history['player_id'] == player_id].sort_values(by=['date'])
 
-    ranking_df = pd.DataFrame\
-                .from_dict(sorted_ranking, orient='index', columns=['elo_rating'])\
-                .reset_index(names='player_id')
+    for surface in ['Clay', 'Hard', 'Grass', 'Carpet']:
+        surface_history = player_elo_history[player_elo_history['surface'] == surface]
 
-    ranking_df['player_name'] = [tour.players[player_id].name for player_id in ranking_df['player_id']]
+        ax4.plot(surface_history['date'], surface_history['elo_rating'], label=f'{surface}')
 
-    end = time()
-    print(f'Ranking saved. Time: {end-start:.2f}s')
-    return ranking_df
+    ax4.legend()
 
-     
+    st.pyplot(fig4)
+
+def show_plots():
+    pass

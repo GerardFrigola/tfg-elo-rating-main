@@ -15,10 +15,7 @@
 
 ### Web: 
 - [ ] Pàgina de documentació
-- [ ] Pàgina de wta i pàgina d'atp
-- [ ] Fer de wta
 - [ ] Veure el ranking en una data concreta. Que pugui anar avançant temporalment manualment el ranking (per exemple setmana a setmana)
-- [ ] Històric
 - [ ] Evitar que quan un valor canvia es recarregui la pàgina
 - [ ] Plots: Evolució del elo d'un jugador (amb surface o no)
 - [ ] st.write(df) formatting que quedi maco
