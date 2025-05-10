@@ -1,4 +1,0 @@
-python ./modeling/main.py
-
-184553 matches loaded. Time: 14.46s
-Tour simulated. Time: 803.74s
