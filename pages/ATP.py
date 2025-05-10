@@ -17,8 +17,8 @@ st.set_page_config(
 # Load data \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 matches_df = pd.read_csv('web_data/clean_atp_matches.csv')
 players_df = pd.read_csv('web_data/clean_atp_players.csv')
-initial_ranking = pd.read_csv('web_data/initial_ranking.csv')
-initial_elo_history = pd.read_csv('web_data/initial_elo_history.csv')
+initial_ranking = pd.read_csv('web_data/atp_initial_ranking.csv')
+initial_elo_history = pd.read_csv('web_data/atp_initial_elo_history.csv')
 assert matches_df.isna().sum().sum() == 0, f'nan values in matches\n{matches_df.isna().sum()}'
 assert players_df.isna().sum().sum() == 0, f'nan values in players\n{players_df.isna().sum()}'
 # //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -53,16 +53,16 @@ if 'atp_ranking' not in ss:
 if 'atp_elo_history' not in ss:
     ss['atp_elo_history'] = initial_elo_history
 
-if 'start_year' not in ss:
-    ss['start_year'] = 1970
+if 'atp_start_year' not in ss:
+    ss['atp_start_year'] = 1970
 
-if 'end_year' not in ss:
-    ss['end_year'] = 2024
+if 'atp_end_year' not in ss:
+    ss['atp_end_year'] = 2024
 
-if 'selected_player_names' not in ss:
+if 'atp_selected_player_names' not in ss:
     names = ss['atp_ranking'].nlargest(5, 'Elo Rating')['First Name'].to_list()
     surnames = ss['atp_ranking'].nlargest(5, 'Elo Rating')['Last Name'].to_list()
-    ss['selected_player_names'] = [n + ' ' + s for n, s in zip(names, surnames)]
+    ss['atp_selected_player_names'] = [n + ' ' + s for n, s in zip(names, surnames)]
     
 
 # //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -122,18 +122,18 @@ st.divider() # -----------------------------------------------------------------
 st.markdown("<h2 style='text-align: center; color: black;'>Plots</h2>", unsafe_allow_html=True)
 
 # Selection of players
-ss['selected_players_names'] = st.multiselect('Selecciona els jugadors que vols veure:', options=player_dict_options.keys(), default=top_five_options.keys(), key='year_list', max_selections=10)
-selected_player_ids = [player_dict_options[key] for key in ss['selected_players_names']]
+ss['atp_selected_player_names'] = st.multiselect('Selecciona els jugadors que vols veure:', options=player_dict_options.keys(), default=top_five_options.keys(), key='year_list', max_selections=10)
+selected_player_ids = [player_dict_options[key] for key in ss['atp_selected_player_names']]
 
 # Selection of years
-ss['start_year'], ss['end_year'] = st.select_slider(
+ss['atp_start_year'], ss['atp_end_year'] = st.select_slider(
     "Selecciona el rang dels anys que vols veure",
     options=list(range(1970, 2025)),
     value=(1970, 2024),
 )
 
 # Elo history along date
-chart2 = ut.plot_elo_history_date_st(ss['atp_ranking'], ss['atp_elo_history'], selected_player_ids, ss['start_year'], ss['end_year'])
+chart2 = ut.plot_elo_history_date_st(ss['atp_ranking'], ss['atp_elo_history'], selected_player_ids, ss['atp_start_year'], ss['atp_end_year'])
 st.altair_chart(chart2, use_container_width=True)
 
 # Elo history along n-games
