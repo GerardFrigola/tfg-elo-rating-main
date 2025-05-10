@@ -1,26 +1,28 @@
 import pandas as pd
 import streamlit as st
 import time
+from datetime import datetime
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+import altair as alt
 
 def simulate_tour(tour_df:pd.DataFrame, players_df:pd.DataFrame, k, ksi, s, initial_elo, min_games): 
     assert tour_df.isna().sum().sum() == 0, f'nan values in tour_df\n{tour_df.isna().sum()}'
 
     players_dic = {player_id: {
-    'player_id': player_id, 
-    'elo_rating': initial_elo, 
-    'elo_clay_rating': initial_elo, 
-    'elo_hard_rating': initial_elo, 
-    'elo_grass_rating': initial_elo, 
-    'elo_carpet_rating': initial_elo, 
-    'elo_unknown_rating': initial_elo,
-    'n_games': 0,
-    'last_game': 00000000
-    } for player_id in players_df['player_id']}
+            'player_id': player_id, 
+            'elo_rating': initial_elo, 
+            'elo_clay_rating': initial_elo, 
+            'elo_hard_rating': initial_elo, 
+            'elo_grass_rating': initial_elo, 
+            'elo_carpet_rating': initial_elo, 
+            'elo_unknown_rating': initial_elo,
+            'n_games': 0,
+            'last_game': None
+        } for player_id in players_df['player_id']}
 
     elo_history_list = []
     placeholder = st.empty()
-    start = time.time()
 
     total_matches = len(tour_df)
     placeholder.markdown(f"<h6 style='text-align: center; color: black;'>Simulant {total_matches} partits. Això hauria de trigar entre 10 i 20 segons.</h6>", unsafe_allow_html=True)
@@ -113,11 +115,10 @@ def simulate_tour(tour_df:pd.DataFrame, players_df:pd.DataFrame, k, ksi, s, init
             'elo_carpet_rating': 'Carpet Elo Rating'
         })
 
-    ranking.index += 1
 
-    ranking_filtered = ranking[ranking['n_games']>min_games]
+    ranking_filtered = ranking[(ranking['n_games']>min_games)]# & (ranking['last_game'] > '2023-01-01')].reset_index(drop=True)
 
-    # TODO: Filtrar jugadors retirats.
+    ranking_filtered.index += 1
 
     elo_history_df = pd.DataFrame(elo_history_list)\
                         .astype({'date': 'datetime64[ns]'})
@@ -129,7 +130,7 @@ def simulate_tour(tour_df:pd.DataFrame, players_df:pd.DataFrame, k, ksi, s, init
 def plot_elos_histogram(ranking, col2):
     fig1, ax1 = plt.subplots(figsize=(10, 4.5))
     elos = ranking['Elo Rating'].tolist()
-    ax1.hist(elos, bins=50)
+    ax1.hist(elos, bins=30)
     ax1.set_title('Elo Rating Distribution')
     ax1.set_xlabel('Elo Rating')
     ax1.set_ylabel('Frequency')
@@ -143,7 +144,7 @@ def plot_elo_history_date(ranking, elo_history):
     ax2.set_ylabel('Elo Rating')
 
     top_five = ranking.nlargest(5, 'Elo Rating')['player_id'].tolist()
-    top_five_elos = elo_history[elo_history['player_id'].isin(top_five)]#.sort_values(by=['date'])
+    top_five_elos = elo_history[elo_history['player_id'].isin(top_five)].sort_values(by=['date'])
 
     for player_id in top_five:
         player_elos = top_five_elos[top_five_elos['player_id'] == player_id]
@@ -152,9 +153,48 @@ def plot_elo_history_date(ranking, elo_history):
 
         ax2.plot(player_elos['date'], player_elos['elo_rating'], label=f'{name} {surname}')
 
-    ax2.legend()
+    ax2.xaxis.set_major_locator(mdates.YearLocator(2))  # Major ticks every 2 years
+    ax2.xaxis.set_minor_locator(mdates.YearLocator(1))  # Minor ticks every 1 year
+    ax2.grid(True, which='major', linestyle='-')  # Add gridlines
+    ax2.grid(True, which='minor', linestyle='-')  # Add gridlines
+    ax2.legend()    
 
     st.pyplot(fig2)
+
+
+
+def plot_elo_history_date_st(ranking, elo_history, players_ids, start_year, end_year):
+
+    top_five_elos = elo_history[elo_history['player_id'].isin(players_ids)].sort_values(by=['date'])
+
+    # Create a single DataFrame for Altair
+    data = []
+    for player_id in players_ids:
+        player_elos = top_five_elos[top_five_elos['player_id'] == player_id].round(0)
+        name = ranking.loc[ranking['player_id'] == player_id, 'First Name'].values[0]
+        surname = ranking.loc[ranking['player_id'] == player_id, 'Last Name'].values[0]
+        player_elos['Player'] = f'{name} {surname}'  # Create player labels
+        data.append(player_elos[['date', 'elo_rating', 'Player']])
+
+    df = pd.concat(data)  # Combine all players into one DataFrame
+
+    # Determine y-axis limits
+    min_elo = df['elo_rating'].min() - 100
+    max_elo = df['elo_rating'].max() + 100
+
+    # Define Altair line chart
+    chart = alt.Chart(df).mark_line().encode(
+        x=alt.X('date:T', scale=alt.Scale(domain=[start_year, end_year])),
+        y=alt.Y('elo_rating:Q', scale=alt.Scale(domain=[min_elo, max_elo])),
+        color=alt.Color('Player:N', legend=alt.Legend(orient='top-left'))  # Different colors for different players
+    ).properties(
+        title=alt.TitleParams(text="Històric Elo Rating per data dels jugadors seleccionats", anchor='middle', fontSize=20, fontWeight='bold'),
+        height=600
+    )
+
+    return chart
+
+
 
 def plot_elo_history_ngames(ranking, elo_history):
     fig3, ax3 = plt.subplots(figsize=(10, 5))
@@ -175,7 +215,62 @@ def plot_elo_history_ngames(ranking, elo_history):
 
     ax3.legend()
 
+    ax3.grid(True, which='major', linestyle='-')
+
     st.pyplot(fig3)
+
+def plot_elo_history_ngames_st(ranking, elo_history, players_ids):
+
+    top_five_elos = elo_history[elo_history['player_id'].isin(players_ids)].sort_values(by=['date'])
+
+    data = []
+    for player_id in players_ids:
+        player_elos = top_five_elos[top_five_elos['player_id'] == player_id].reset_index(drop=True).round(0)
+        name = ranking.loc[ranking['player_id'] == player_id, 'First Name'].values[0]
+        surname = ranking.loc[ranking['player_id'] == player_id, 'Last Name'].values[0]
+        n_games = len(player_elos)  # Number of recorded Elo ratings
+        
+        player_elos['Game Number'] = list(range(1, n_games + 1))  # Set x-axis as game count
+        player_elos['Player'] = f'{name} {surname}'  # Create player labels
+        data.append(player_elos[['Game Number', 'elo_rating', 'Player']])
+
+    df = pd.concat(data)
+
+    # Determine y-axis limits
+    min_elo = df['elo_rating'].min() - 100
+    max_elo = df['elo_rating'].max() + 100
+
+    # Define Altair line chart
+    chart = alt.Chart(df).mark_line().encode(
+        x=alt.X('Game Number:Q', scale=alt.Scale(domain=[1, df['Game Number'].max()])),
+        y=alt.Y('elo_rating:Q', scale=alt.Scale(domain=[min_elo, max_elo])),
+        color=alt.Color('Player:N', legend=alt.Legend(orient='top-left'))  # Different colors for different players
+    ).properties(
+        title=alt.TitleParams(text="Històric Elo Rating per partits jugats dels jugadors seleccionats", anchor='middle', fontSize=20, fontWeight='bold'),
+        height=600
+    )   
+    
+    return chart
+    
+
+def plot_elo_history_surface(ranking, elo_history, player_id):
+    fig4, ax4 = plt.subplots(figsize=(10, 5))
+    name = ranking.loc[ranking['player_id'] == player_id, 'First Name'].values[0]
+    surname = ranking.loc[ranking['player_id'] == player_id, 'Last Name'].values[0]
+    ax4.set_title(f'Històric de {name} {surname} per superfície')
+    ax4.set_xlabel('Superfície')
+    ax4.set_ylabel('Elo Rating')
+
+    player_elo_history = elo_history[elo_history['player_id'] == player_id].sort_values(by=['date'])
+
+    for surface in ['Clay', 'Hard', 'Grass', 'Carpet']:
+        surface_history = player_elo_history[player_elo_history['surface'] == surface]
+
+        ax4.plot(surface_history['date'], surface_history['elo_rating'], label=f'{surface}')
+
+    ax4.legend()
+
+    st.pyplot(fig4)
 
 def plot_elo_history_surface(ranking, elo_history, player_id):
     fig4, ax4 = plt.subplots(figsize=(10, 5))

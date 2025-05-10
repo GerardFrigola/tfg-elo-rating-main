@@ -1,5 +1,7 @@
 # TODO
 
+- [ ] NO EM CARREGUEN ELS PARTITS DE 2024 ARREGLAR!!!!!!!!!
+
 - [] Crear docu llicència
 - [] Per pàgina web mirar paquet shine per python.
 - [] k variable en funcio del elo
@@ -19,3 +21,6 @@
 - [ ] Evitar que quan un valor canvia es recarregui la pàgina
 - [ ] Plots: Evolució del elo d'un jugador (amb surface o no)
 - [ ] st.write(df) formatting que quedi maco
+- [ ] stats rollo, elo maxim, 
+- [ ] mirar el surface rating crec que no funciona. 
+- [ ] botó save ranking
