@@ -190,7 +190,7 @@ def plot_elo_history_date_st(ranking, elo_history, players_ids, start_year, end_
     ).properties(
         title=alt.TitleParams(text="Històric Elo Rating per data dels jugadors seleccionats", anchor='middle', fontSize=20, fontWeight='bold'),
         height=600
-    )
+    ).interactive()
 
     return chart
 
@@ -248,7 +248,7 @@ def plot_elo_history_ngames_st(ranking, elo_history, players_ids):
     ).properties(
         title=alt.TitleParams(text="Històric Elo Rating per partits jugats dels jugadors seleccionats", anchor='middle', fontSize=20, fontWeight='bold'),
         height=600
-    )   
+    ).interactive()
     
     return chart
     
