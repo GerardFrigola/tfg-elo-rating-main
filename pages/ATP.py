@@ -98,7 +98,8 @@ st.markdown("<h2 style='text-align: center; color: black;'>Ranking</h2>", unsafe
 
 col1, col2 = st.columns([1, 2])
 col1.write(ss['atp_ranking'][
-    ['First Name', 
+    ['rank',
+    'First Name', 
     'Last Name', 
     'Elo Rating', 
     'Hand',
@@ -111,7 +112,7 @@ col1.write(ss['atp_ranking'][
     'player_id',
     'last_game',
     'n_games']
-])
+].set_index('rank'))
 
 # Histogram
 ut.plot_elos_histogram(ss['atp_ranking'], col2)

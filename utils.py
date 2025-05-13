@@ -9,6 +9,8 @@ import altair as alt
 def simulate_tour(tour_df:pd.DataFrame, players_df:pd.DataFrame, k, ksi, s, initial_elo, min_games): 
     assert tour_df.isna().sum().sum() == 0, f'nan values in tour_df\n{tour_df.isna().sum()}'
 
+    tour_df = tour_df.sort_values(by='tourney_date', ascending=True)
+
     players_dic = {player_id: {
             'player_id': player_id, 
             'elo_rating': initial_elo, 
@@ -118,7 +120,7 @@ def simulate_tour(tour_df:pd.DataFrame, players_df:pd.DataFrame, k, ksi, s, init
 
     ranking_filtered = ranking[(ranking['n_games']>min_games)]# & (ranking['last_game'] > '2023-01-01')].reset_index(drop=True)
 
-    ranking_filtered.index += 1
+    ranking_filtered['rank'] = ranking_filtered.index + 1
 
     elo_history_df = pd.DataFrame(elo_history_list)\
                         .astype({'date': 'datetime64[ns]'})
