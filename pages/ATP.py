@@ -26,7 +26,7 @@ assert players_df.isna().sum().sum() == 0, f'nan values in players\n{players_df.
 
 # Functions \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 def values_changed():
-    st.sidebar.markdown(':orange[El valor dels paràmetres ha canviat. Si us plau, torna a llançar la simulació per veure els resultats.]')
+    st.sidebar.markdown(':orange[El valor dels paràmetres ha canviat. Torna a llançar la simulació per veure els resultats.]')
 # //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -36,11 +36,13 @@ with st.sidebar:
 
     k = st.number_input('Paràmetre K', min_value=1, max_value=200, step=1, value=24, placeholder='Enter a integer', on_change=values_changed, help='El paràmetre K controla la quantitat de canvi en el rànquing d\'un jugador després d\'una victòria o derrota. Un valor més alt significa que el rànquing canvia més ràpidament i que la distribució final de puntuacións serà més plana i ampla.')
     ksi = st.number_input('Paràmetre xi', min_value=100, max_value=1000, step=1, value=400, placeholder='Enter a integer', on_change=values_changed, help='Una diferència de <xi> punts entre dos jugadors significa que el jugador amb la puntuació més alta és deu vegades més probable que guanyi a l\'altre jugador. Un valor més alt significa que el rànquing és més sensible a les diferències de puntuació entre jugadors.')
-    s = st.selectbox('Input score type:', options=['delta', 'thirds'], index=0, on_change=values_changed)
-    initial_elo = st.number_input('Initial Elo rating', min_value=0, max_value=5000, step=1, value=1500, placeholder='Enter a integer', on_change=values_changed)
-    min_games = st.number_input('Nombre mínim de partits jugats per entrar al ranquing', min_value=0, max_value=1000, step=1, value=30, placeholder='Enter a integer', on_change=values_changed)
+    s = st.selectbox('Input score type:', options=['delta', 'thirds'], index=0, on_change=values_changed, help='delta: Els nombre de punts que guanya el guanyador és el mateix que els que perd el perdedor  |  thirds: El nombre de punts que guanya el guanyador és el doble dels que perd el perdedor. Per tant, el guanyador guanya 2/3 dels punts i el perdedor en perd 1/3.')
+    initial_elo = st.number_input('Initial Elo rating', min_value=0, max_value=5000, step=1, value=1500, placeholder='Enter a integer', on_change=values_changed, help='Puntuació inicial d\'Elo per a tots els jugadors.')
+    min_games = st.number_input('Mínim de partits jugats per entrar al ranquing', min_value=0, max_value=1000, step=1, value=30, placeholder='Enter a integer', on_change=values_changed)
+    
     years = list(range(1970, 2025))
-    # year_list = st.multiselect('Select the year you want to see:', options=years)
+    years.insert(0, 'Tots')
+    year_to_simulate = st.selectbox('Selecciona un any per simular', options=years, index=0, on_change=values_changed, key='year_to_simulate')
 
     run_simulation = st.button('Llença la simulació', type='primary')
 # ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -74,7 +76,7 @@ if 'atp_selected_player_names' not in ss:
 st.markdown("<h1 style='text-align: center; color: black;'>Elo Rating al Tennis</h1>", unsafe_allow_html=True)
 
 if run_simulation:
-    ss['atp_ranking'], ss['atp_elo_history'] = ut.simulate_tour(matches_df, players_df, k, ksi, s, initial_elo, min_games)
+    ss['atp_ranking'], ss['atp_elo_history'] = ut.simulate_tour(matches_df, players_df, k, ksi, s, initial_elo, min_games, year_to_simulate)
 
 top_five = ss['atp_ranking'].nlargest(5, 'Elo Rating')
 top_five_options = {

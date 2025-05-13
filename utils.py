@@ -6,10 +6,17 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import altair as alt
 
-def simulate_tour(tour_df:pd.DataFrame, players_df:pd.DataFrame, k, ksi, s, initial_elo, min_games): 
+def simulate_tour(tour_df:pd.DataFrame, players_df:pd.DataFrame, k, ksi, s, initial_elo, min_games, year_to_simulate): 
     assert tour_df.isna().sum().sum() == 0, f'nan values in tour_df\n{tour_df.isna().sum()}'
 
+    total_matches = len(tour_df)
+    placeholder = st.empty()
+    placeholder.markdown(f"<h6 style='text-align: center; color: black;'>Simulant {total_matches} partits. Trigarà entre 10 i 20 segons.</h6>", unsafe_allow_html=True)
+
     tour_df = tour_df.sort_values(by='tourney_date', ascending=True)
+
+    if year_to_simulate != 'Tots': 
+        tour_df = tour_df[tour_df['match_year']==year_to_simulate]
 
     players_dic = {player_id: {
             'player_id': player_id, 
@@ -20,14 +27,12 @@ def simulate_tour(tour_df:pd.DataFrame, players_df:pd.DataFrame, k, ksi, s, init
             'elo_carpet_rating': initial_elo, 
             'elo_unknown_rating': initial_elo,
             'n_games': 0,
-            'last_game': None
+            'last_game': None,
+            'n_wins': 0,
+            'n_losses': 0
         } for player_id in players_df['player_id']}
 
     elo_history_list = []
-    placeholder = st.empty()
-
-    total_matches = len(tour_df)
-    placeholder.markdown(f"<h6 style='text-align: center; color: black;'>Simulant {total_matches} partits. Això hauria de trigar entre 10 i 20 segons.</h6>", unsafe_allow_html=True)
 
     year = ''
     for _, m in tour_df.iterrows():
@@ -83,18 +88,20 @@ def simulate_tour(tour_df:pd.DataFrame, players_df:pd.DataFrame, k, ksi, s, init
         players_dic[loser_id]['last_game'] = match_date
         players_dic[winner_id]['n_games'] += 1
         players_dic[winner_id]['last_game'] = match_date
+        players_dic[winner_id]['n_wins'] += 1
+        players_dic[loser_id]['n_losses'] += 1
+        assert players_dic[winner_id]['n_games'] == players_dic[winner_id]['n_wins'] + players_dic[winner_id]['n_losses'],\
+            f"Error: n_games != n_wins + n_losses -> {players_dic[winner_id]['n_games']} != {players_dic[winner_id]['n_wins']} + {players_dic[winner_id]['n_losses']}"
 
         # Històric
         winner_history = {
             'player_id': winner_id,
             'date': match_date,
-            'surface': surface,
             'elo_rating': winner_new_elo
         }
         loser_history = {
             'player_id': loser_id,
             'date': match_date,
-            'surface': surface,
             'elo_rating': loser_new_elo
         }
 
@@ -124,7 +131,6 @@ def simulate_tour(tour_df:pd.DataFrame, players_df:pd.DataFrame, k, ksi, s, init
 
     elo_history_df = pd.DataFrame(elo_history_list)\
                         .astype({'date': 'datetime64[ns]'})
-
     placeholder.empty()
     return ranking_filtered, elo_history_df
 
