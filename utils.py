@@ -136,13 +136,27 @@ def simulate_tour(tour_df:pd.DataFrame, players_df:pd.DataFrame, k, ksi, s, init
 
 
 def plot_elos_histogram(ranking, col2):
-    fig1, ax1 = plt.subplots(figsize=(10, 4.5))
     elos = ranking['Elo Rating'].tolist()
-    ax1.hist(elos, bins=30)
-    ax1.set_title('Elo Rating Distribution')
-    ax1.set_xlabel('Elo Rating')
-    ax1.set_ylabel('Frequency')
-    col2.pyplot(fig1)
+    data = pd.DataFrame({'Elo Rating': elos})
+    mean_value = data['Elo Rating'].mean()  # Calculate the mean
+
+    histogram = alt.Chart(data).mark_bar().encode(
+        alt.X('Elo Rating:Q', bin=alt.Bin(maxbins=40), title='Elo Rating'),
+        alt.Y('count()', title='Frequència')
+    ).properties(
+        title=alt.TitleParams(text="Distribució de puntuacions", anchor='middle', fontSize=20, fontWeight='bold'),
+        width=600,
+        height=450
+    )
+
+    mean_line = alt.Chart(pd.DataFrame({'mean': [mean_value]})).mark_rule(color='red').encode(
+        x='mean:Q'
+    )
+    
+    # Combine histogram and mean line
+    chart = (histogram + mean_line).interactive()
+
+    col2.altair_chart(chart)
 
 
 def plot_elo_history_date(ranking, elo_history):
