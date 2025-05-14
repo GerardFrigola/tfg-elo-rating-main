@@ -16,9 +16,9 @@ def simulate_tour(tour_df:pd.DataFrame, players_df:pd.DataFrame, k, ksi, s, init
     tour_df = tour_df.sort_values(by='tourney_date', ascending=True)
 
     if year_to_simulate != 'Tots': 
-        tour_df = tour_df[tour_df['match_year']==year_to_simulate]
+        tour_df = tour_df[tour_df['tour_year']==year_to_simulate]
 
-    players_dic = {player_id: {
+    all_players_dic = {player_id: {
             'player_id': player_id, 
             'elo_rating': initial_elo, 
             'elo_clay_rating': initial_elo, 
@@ -37,9 +37,9 @@ def simulate_tour(tour_df:pd.DataFrame, players_df:pd.DataFrame, k, ksi, s, init
     year = ''
     for _, m in tour_df.iterrows():
         
-        if year != m['match_year']:
+        if year != m['tour_year']:
             # placeholder.write(f'    Simulating year {m['match_year']}...')
-            year = m['match_year']
+            year = m['tour_year']
 
         # Update elo ratings
         match s:
@@ -63,11 +63,11 @@ def simulate_tour(tour_df:pd.DataFrame, players_df:pd.DataFrame, k, ksi, s, init
         match_date = m['tourney_date']
         surface = m['surface']
 
-        old_wr =  players_dic[winner_id]['elo_rating']
-        old_lr = players_dic[loser_id]['elo_rating']
+        old_wr =  all_players_dic[winner_id]['elo_rating']
+        old_lr = all_players_dic[loser_id]['elo_rating']
         # Surface
-        old_slr = players_dic[winner_id][elo_surface]
-        old_swr = players_dic[loser_id][elo_surface]
+        old_slr = all_players_dic[winner_id][elo_surface]
+        old_swr = all_players_dic[loser_id][elo_surface]
 
         mu_w = 1 / (1 + pow(10, -(old_wr - old_lr)/ksi))
         mu_l = 1 / (1 + pow(10, -(old_lr - old_wr)/ksi))
@@ -78,20 +78,20 @@ def simulate_tour(tour_df:pd.DataFrame, players_df:pd.DataFrame, k, ksi, s, init
         # Actualitzar els valors dels elo-ratings dels jugadors. 
         winner_new_elo = old_wr + k*(Sw - mu_w)
         loser_new_elo = old_lr + k*(Sl - mu_l)
-        players_dic[winner_id]['elo_rating'] = winner_new_elo
-        players_dic[loser_id]['elo_rating'] = loser_new_elo
+        all_players_dic[winner_id]['elo_rating'] = winner_new_elo
+        all_players_dic[loser_id]['elo_rating'] = loser_new_elo
         # Surface
-        players_dic[winner_id][elo_surface] = old_swr + k*(Sw - mu_sw)
-        players_dic[loser_id][elo_surface] = old_slr + k*(Sl - mu_sl)
+        all_players_dic[winner_id][elo_surface] = old_swr + k*(Sw - mu_sw)
+        all_players_dic[loser_id][elo_surface] = old_slr + k*(Sl - mu_sl)
 
-        players_dic[loser_id]['n_games'] += 1
-        players_dic[loser_id]['last_game'] = match_date
-        players_dic[winner_id]['n_games'] += 1
-        players_dic[winner_id]['last_game'] = match_date
-        players_dic[winner_id]['n_wins'] += 1
-        players_dic[loser_id]['n_losses'] += 1
-        assert players_dic[winner_id]['n_games'] == players_dic[winner_id]['n_wins'] + players_dic[winner_id]['n_losses'],\
-            f"Error: n_games != n_wins + n_losses -> {players_dic[winner_id]['n_games']} != {players_dic[winner_id]['n_wins']} + {players_dic[winner_id]['n_losses']}"
+        all_players_dic[loser_id]['n_games'] += 1
+        all_players_dic[loser_id]['last_game'] = match_date
+        all_players_dic[winner_id]['n_games'] += 1
+        all_players_dic[winner_id]['last_game'] = match_date
+        all_players_dic[winner_id]['n_wins'] += 1
+        all_players_dic[loser_id]['n_losses'] += 1
+        assert all_players_dic[winner_id]['n_games'] == all_players_dic[winner_id]['n_wins'] + all_players_dic[winner_id]['n_losses'],\
+            f"Error: n_games != n_wins + n_losses -> {all_players_dic[winner_id]['n_games']} != {all_players_dic[winner_id]['n_wins']} + {all_players_dic[winner_id]['n_losses']}"
 
         # Històric
         winner_history = {
@@ -109,7 +109,7 @@ def simulate_tour(tour_df:pd.DataFrame, players_df:pd.DataFrame, k, ksi, s, init
         elo_history_list.append(loser_history)
 
 
-    players_simulated: pd.DataFrame = pd.DataFrame.from_dict(players_dic, orient='index')
+    players_simulated: pd.DataFrame = pd.DataFrame.from_dict(all_players_dic, orient='index')
 
     ranking: pd.DataFrame = players_df.merge(players_simulated, how='left', on='player_id')\
         .sort_values(by='elo_rating', ascending=False)\
