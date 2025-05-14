@@ -26,7 +26,7 @@ st.markdown("<h1 style='text-align: center; color: black;'>Cercador de partits</
 # Filters
 col1, col2, col3, col4, col5, col6 = st.columns([1, 1, 1, 1, 1, 1])
 st.header('Se vienen cositas...')
-col1.selectbox('Torneig', options=['ATP', 'WTA'], key='tournament')
+sex = col1.selectbox('Torneig', options=['ATP', 'WTA'], key='tournament')
 
 atp_start_year, atp_end_year = col2.select_slider(
     "Selecciona el rang dels anys que vols veure",
@@ -37,5 +37,18 @@ atp_start_year, atp_end_year = col2.select_slider(
 ronda = col3.selectbox('Ronda', options= ['R128', 'R64', 'R32', 'R16', 'QF', 'SF', 'F',  'BR',  'RR', 'ER'], key='round',
         help=f'R128=64-ens -- R64=32-ens -- R32=Setzens -- R16=Vuitens de final -- QF: Quarts de final -- SF: Semifinal -- F: Final -- BR: Bye Round -- RR: Round Robin -- ER: Exhibition Round')
 
-
+match sex:
+    case 'ATP':
+        st.dataframe(atp_matches_df[
+            ['tourney_date',
+            'tourney_name',
+            'surface',
+            'round',
+            'winner_name',
+            'score',
+            'loser_name',
+            'match_id']
+        ])
+    case 'WTA':
+        st.dataframe(wta_matches_df)
 
