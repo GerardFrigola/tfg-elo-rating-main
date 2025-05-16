@@ -314,5 +314,45 @@ def plot_elo_history_surface(ranking, elo_history, player_id):
     st.pyplot(fig4)
 
 
-def show_plots():
-    pass
+def filter_matches(matches: pd.DataFrame, start_year:int, end_year:int, round, player_ids:list[str], tournament, surface):
+    """
+    Filter matches based on the given parameters.
+    
+    Parameters:
+    - matches: DataFrame containing match data.
+    - tourney: Tournament type (ATP or WTA).
+    - year_range: Tuple containing the start and end years.
+    - round: Round of the match.
+    - players: List of player names to filter by.
+    - tournament: Tournament name to filter by.
+    - surface: Surface type to filter by.
+
+    Returns:
+    - Filtered DataFrame.
+    """
+
+
+
+    # Filter by year range
+    matches['tourney_date'] = pd.to_datetime(matches['tourney_date'])
+    matches = matches[(matches['tourney_date'].dt.year >= start_year) & (matches['tourney_date'].dt.year <= end_year)]
+    
+    # Filter by round
+    if round: 
+        matches = matches[matches['round'].isin(round)]
+
+    # Filter by players
+    if player_ids:
+        matches = matches[matches['winner_id'].isin(player_ids) | matches['loser_id'].isin(player_ids)]
+
+    # Filter by tournament
+    if tournament:
+        matches = matches[matches['tourney_name'].isin(tournament)]
+
+    # Filter by surface
+    if surface:
+        matches = matches[matches['surface'].isin(surface)]
+    
+
+
+    return matches

@@ -33,7 +33,7 @@ def values_changed():
 # Sidebar \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 with st.sidebar:
     st.title('Filtres')
-
+    run_simulation = st.button('Llença la simulació', type='primary')
     k = st.number_input('Paràmetre K', min_value=1, max_value=200, step=1, value=24, placeholder='Enter a integer', on_change=values_changed, help='El paràmetre K controla la quantitat de canvi en el rànquing d\'un jugador després d\'una victòria o derrota. Un valor més alt significa que el rànquing canvia més ràpidament i que la distribució final de puntuacións serà més plana i ampla.')
     ksi = st.number_input('Paràmetre xi', min_value=100, max_value=1000, step=1, value=400, placeholder='Enter a integer', on_change=values_changed, help='Una diferència de <xi> punts entre dos jugadors significa que el jugador amb la puntuació més alta és deu vegades més probable que guanyi a l\'altre jugador. Un valor més alt significa que el rànquing és més sensible a les diferències de puntuació entre jugadors.')
     s = st.selectbox('Input score type:', options=['delta', 'thirds'], index=0, on_change=values_changed, help='delta: Els nombre de punts que guanya el guanyador és el mateix que els que perd el perdedor  |  thirds: El nombre de punts que guanya el guanyador és el doble dels que perd el perdedor. Per tant, el guanyador guanya 2/3 dels punts i el perdedor en perd 1/3.')
@@ -42,9 +42,9 @@ with st.sidebar:
     
     years = list(range(1970, 2025))
     years.insert(0, 'Tots')
-    year_to_simulate = st.selectbox('Selecciona un any per simular', options=years, index=0, on_change=values_changed, key='year_to_simulate')
-
-    run_simulation = st.button('Llença la simulació', type='primary')
+    year_to_simulate = st.selectbox('Selecciona un any per simular-lo', options=years, index=0, on_change=values_changed, key='year_to_simulate')
+    start_year = st.number_input('Any d\'inici', min_value=1970, max_value=2024, step=1, value=1970, placeholder='Enter a integer', on_change=values_changed)
+    
 # ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -87,7 +87,7 @@ top_five_options = {
     )
 }
 
-player_dict_options = {
+atp_player_dict_options = {
     name: player_id
     for name, player_id in zip(
         ss['atp_ranking']['First Name'] + ' ' + ss['atp_ranking']['Last Name'],
@@ -125,8 +125,8 @@ st.divider() # -----------------------------------------------------------------
 st.markdown("<h2 style='text-align: center; color: black;'>Plots</h2>", unsafe_allow_html=True)
 
 # Selection of players
-ss['atp_selected_player_names'] = st.multiselect('Selecciona els jugadors que vols veure:', options=player_dict_options.keys(), default=top_five_options.keys(), key='year_list', max_selections=10)
-selected_player_ids = [player_dict_options[key] for key in ss['atp_selected_player_names']]
+ss['atp_selected_player_names'] = st.multiselect('Selecciona els jugadors que vols veure:', options=atp_player_dict_options.keys(), default=top_five_options.keys(), key='year_list', max_selections=10)
+selected_player_ids = [atp_player_dict_options[key] for key in ss['atp_selected_player_names']]
 
 # Selection of years
 ss['atp_start_year'], ss['atp_end_year'] = st.select_slider(
