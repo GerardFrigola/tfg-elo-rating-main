@@ -5,6 +5,12 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import altair as alt
+from pandas.api.types import (
+    is_categorical_dtype,
+    is_datetime64_any_dtype,
+    is_numeric_dtype,
+    is_object_dtype,
+)
 
 def simulate_tour(tour_df:pd.DataFrame, players_df:pd.DataFrame, k, ksi, s, initial_elo, min_games, year_to_simulate): 
     assert tour_df.isna().sum().sum() == 0, f'nan values in tour_df\n{tour_df.isna().sum()}'
@@ -132,6 +138,7 @@ def simulate_tour(tour_df:pd.DataFrame, players_df:pd.DataFrame, k, ksi, s, init
     elo_history_df = pd.DataFrame(elo_history_list)\
                         .astype({'date': 'datetime64[ns]'})
     placeholder.empty()
+
     return ranking_filtered, elo_history_df
 
 
@@ -356,3 +363,186 @@ def filter_matches(matches: pd.DataFrame, start_year:int, end_year:int, round, p
 
 
     return matches
+
+
+def filter_atp_dataframe(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Adds a UI on top of a dataframe to let viewers filter columns
+    Exact same code as filter_wta_dataframe, but for ATP. Created to avoid multiselect object ID's conflicting.
+
+    Args:
+        df (pd.DataFrame): Original dataframe
+
+    Returns:
+        pd.DataFrame: Filtered dataframe
+    """
+    # modify = st.checkbox("Add filters")
+
+    # if not modify:
+    #     return df
+
+    df = df.copy()
+
+    # Try to convert datetimes into a standard format (datetime, no timezone)
+    for col in df.columns:
+        if is_object_dtype(df[col]):
+            try:
+                df[col] = pd.to_datetime(df[col])
+            except Exception:
+                pass
+
+        if is_datetime64_any_dtype(df[col]):
+            df[col] = df[col].dt.tz_localize(None)
+
+    modification_container = st.container()
+
+    cols_to_filter = ['tour_year', 'tourney_name', 'tourney_date', 'surface', 'round', 'tourney_level', 'winner_name', 'loser_name']
+    categorical_columns = ['tourney_name', 'surface', 'round', 'tourney_level', 'winner_name', 'loser_name']
+    numerical_columns = ['tour_year']
+    datetime_columns = ['tourney_date']
+    with modification_container:
+        to_filter_columns = st.multiselect("Filter dataframe on", cols_to_filter, key='atp_multiselect_filter')
+        for column in to_filter_columns:
+            left, right = st.columns((1, 20))
+
+            # Categorical type
+            if column in categorical_columns:
+                user_cat_input = right.multiselect(
+                    f"Values for {column}",
+                    df[column].unique(),
+                    default=None,
+                    key=f'atp_{column}_multiselect'
+                )
+                if not user_cat_input:
+                    user_cat_input = df[column].unique()
+                df = df[df[column].isin(user_cat_input)]
+
+            # Numerical type
+            elif column in numerical_columns:
+                _min = int(df[column].min())
+                _max = int(df[column].max())
+                step = 1
+                user_num_input = right.slider(
+                    f"Values for {column}",
+                    min_value=_min,
+                    max_value=_max,
+                    value=(_min, _max),
+                    step=step,
+                    key=f'atp_{column}_slider'
+                )
+                df = df[df[column].between(*user_num_input)]
+            
+            # Datetime type
+            elif column in datetime_columns:
+                user_date_input = right.date_input(
+                    f"Values for {column}",
+                    value=(
+                        df[column].min(),
+                        df[column].max(),
+                    ),
+                    key=f'atp_{column}_date_input'
+                )
+                if len(user_date_input) == 2:
+                    user_date_input = tuple(map(pd.to_datetime, user_date_input))
+                    start_date, end_date = user_date_input
+                    df = df.loc[df[column].between(start_date, end_date)]
+            else:
+                user_text_input = right.text_input(
+                    f"Substring or regex in {column}",
+                    key=f'atp_{column}_text_input'
+                )
+                if user_text_input:
+                    df = df[df[column].astype(str).str.contains(user_text_input)]
+
+    return df
+
+def filter_wta_dataframe(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Adds a UI on top of a dataframe to let viewers filter columns
+    Exact same code as filter_atp_dataframe, but for WTA. Created to avoid multiselect object ID's conflicting.
+
+    Args:
+        df (pd.DataFrame): Original dataframe
+
+    Returns:
+        pd.DataFrame: Filtered dataframe
+    """
+    # modify = st.checkbox("Add filters")
+
+    # if not modify:
+    #     return df
+
+    df = df.copy()
+
+    # Try to convert datetimes into a standard format (datetime, no timezone)
+    for col in df.columns:
+        if is_object_dtype(df[col]):
+            try:
+                df[col] = pd.to_datetime(df[col])
+            except Exception:
+                pass
+
+        if is_datetime64_any_dtype(df[col]):
+            df[col] = df[col].dt.tz_localize(None)
+
+    modification_container = st.container()
+
+    cols_to_filter = ['tour_year', 'tourney_name', 'tourney_date', 'surface', 'round', 'tourney_level', 'winner_name', 'loser_name']
+    categorical_columns = ['tourney_name', 'surface', 'round', 'tourney_level', 'winner_name', 'loser_name']
+    numerical_columns = ['tour_year']
+    datetime_columns = ['tourney_date']
+    with modification_container:
+        to_filter_columns = st.multiselect("Filtrar partits per les columnes:", cols_to_filter, key='wta_multiselect_filter', placeholder='Selecciona les columnes a filtrar')
+        for column in to_filter_columns:
+            left, right = st.columns((1, 20))
+
+            # Categorical type
+            if column in categorical_columns:
+                user_cat_input = right.multiselect(
+                    f"Values for {column}",
+                    df[column].unique(),
+                    default=None,
+                    key=f'wta_{column}_multiselect'
+                )
+                if not user_cat_input:
+                    user_cat_input = df[column].unique()
+                df = df[df[column].isin(user_cat_input)]
+
+            # Numerical type
+            elif column in numerical_columns:
+                _min = int(df[column].min())
+                _max = int(df[column].max())
+                step = 1
+                user_num_input = right.slider(
+                    f"Values for {column}",
+                    min_value=_min,
+                    max_value=_max,
+                    value=(_min, _max),
+                    step=step,
+                    key=f'wta_{column}_slider'
+                )
+                df = df[df[column].between(*user_num_input)]
+            
+            # Datetime type
+            elif column in datetime_columns:
+                user_date_input = right.date_input(
+                    f"Values for {column}",
+                    value=(
+                        df[column].min(),
+                        df[column].max(),
+                    ),
+                    key=f'wta_{column}_date_input'
+                )
+                if len(user_date_input) == 2:
+                    user_date_input = tuple(map(pd.to_datetime, user_date_input))
+                    start_date, end_date = user_date_input
+                    df = df.loc[df[column].between(start_date, end_date)]
+            else:
+                user_text_input = right.text_input(
+                    f"Substring or regex in {column}",
+                    key=f'wta_{column}_text_input'
+                )
+                if user_text_input:
+                    df = df[df[column].astype(str).str.contains(user_text_input)]
+
+    return df
