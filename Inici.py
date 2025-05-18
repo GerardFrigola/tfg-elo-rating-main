@@ -1,12 +1,15 @@
 import streamlit as st
+import pandas as pd
+from streamlit import session_state as ss
+from utils import Simulation as sim
 # import base64
 
 st.set_page_config(
     page_title='Welcome!',
-    page_icon='🏆',
-    layout='wide',
+    page_icon=':trophy:',
+    layout='wide'
 )
-
+sim.initialize_session_satate()
 # @st.cache(allow_output_mutation=True)
 # def get_base64_of_bin_file(bin_file):
 #     with open(bin_file, 'rb') as f:
@@ -29,9 +32,7 @@ st.set_page_config(
 
 # set_png_as_page_bg('web/background_tennis.png')
 
-st.sidebar.markdown('Selecciona un tour de la barra lateral')
 
-st.markdown("<h1 style='text-align: center; color: black;'>Inici</h1>", unsafe_allow_html=True)
 
 st.markdown("<h2 style='text-align: center; color: black;'>Benvingut a l'aplicació de simulació d'Elo Rating al Tennis</h2>", unsafe_allow_html=True)
 
