@@ -12,6 +12,7 @@ st.set_page_config(
     layout='wide',
     initial_sidebar_state="expanded"
 )
+sim.initialize_session_satate()
 
 # Functions \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 def values_changed(placeholder):

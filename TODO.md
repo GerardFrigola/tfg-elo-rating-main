@@ -15,6 +15,5 @@
 ### Web: 
 - [ ] Pàgina de documentació
 - [ ] Veure el ranking en una data concreta. Que pugui anar avançant temporalment manualment el ranking (per exemple setmana a setmana)
-- [ ] stats rollo, elo maxim, 
 - [ ] mirar el surface rating crec que no funciona. 
 - [ ] botó save ranking

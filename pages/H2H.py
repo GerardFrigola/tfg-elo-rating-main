@@ -2,6 +2,7 @@ import pandas as pd
 import streamlit as st
 from streamlit import session_state as ss
 from utils import Plots as plot
+from utils import Simulation as sim
 
 st.set_page_config(
     page_title='Elo Rating al Tennis',
@@ -9,6 +10,7 @@ st.set_page_config(
     layout='wide',
     initial_sidebar_state="expanded"
 )
+sim.initialize_session_satate()
 css='''
 [data-testid="metric-container"] {
     width: fit-content;
@@ -98,6 +100,14 @@ col2.markdown(f"""
     </div>
     """, unsafe_allow_html=True
 )
+col2.markdown(f"""
+    <div style='display: flex; justify-content: space-between; font-size: 24px;'>
+        <span style='text-align: left; font-weight: bold;'>{player1_info["max_elo_rating"].values[0]:.0f}</span>
+        <span style='text-align: left;'>MAX ELO RATING</span>
+        <span style='text-align: right; font-weight: bold;'>{player2_info["max_elo_rating"].values[0]:.0f}</span>
+    </div>
+    """, unsafe_allow_html=True
+)
 
 
 # Player 1 info:
@@ -159,3 +169,12 @@ col3.markdown(f"""
     </div>
     """, unsafe_allow_html=True
 )
+
+st.markdown('<h2 style="text-align: center; color: black;">Enfrontaments</h2>', unsafe_allow_html=True)
+
+enfrontaments = ss['atp_matches_df'][
+    (ss['atp_matches_df']['winner_id']==player1_id) & (ss['atp_matches_df']['loser_id']==player2_id) |
+    (ss['atp_matches_df']['winner_id']==player2_id) & (ss['atp_matches_df']['loser_id']==player1_id)
+    ]
+
+st.dataframe(enfrontaments)

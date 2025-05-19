@@ -2,6 +2,7 @@ import pandas as pd
 import streamlit as st
 from streamlit import session_state as ss
 from utils import Filter as fil
+from utils import Simulation as sim
 
 st.set_page_config(
     page_title='Elo Rating al Tennis',
@@ -9,6 +10,8 @@ st.set_page_config(
     layout='wide',
     initial_sidebar_state="expanded"
 )
+sim.initialize_session_satate()
+
 
 st.markdown("<h1 style='text-align: center; color: black;'>Cercador de partits</h1>", unsafe_allow_html=True)
 
