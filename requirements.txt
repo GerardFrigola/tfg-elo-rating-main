@@ -4,3 +4,4 @@ streamlit
 pathlib
 matplotlib
 altair
+streamlit_extras
