@@ -1,7 +1,5 @@
 import pandas as pd
 import streamlit as st
-import time
-from datetime import datetime
 import altair as alt
 from streamlit import session_state as ss
 import requests

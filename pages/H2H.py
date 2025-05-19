@@ -1,9 +1,6 @@
 import pandas as pd
 import streamlit as st
-import streamlit_extras as stx
 from streamlit import session_state as ss
-from io import BytesIO
-import requests
 from utils import Plots as plot
 
 st.set_page_config(
