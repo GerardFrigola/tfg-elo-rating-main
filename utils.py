@@ -58,6 +58,12 @@ class Simulation:
             names = ss['wta_ranking'].nlargest(5, 'Elo Rating')['First Name'].to_list()
             surnames = ss['wta_ranking'].nlargest(5, 'Elo Rating')['Last Name'].to_list()
             ss['wta_selected_player_names'] = [n + ' ' + s for n, s in zip(names, surnames)]
+        
+        if 'h2h_player1' not in ss: 
+            ss['h2h_player1'] = 'Jannik Sinner'
+
+        if 'h2h_player2' not in ss: 
+            ss['h2h_player2'] = 'Carlos Alcaraz'
 
         assert ss['atp_matches_df'].isna().sum().sum() == 0, f'nan values in matches\n{ss['atp_matches_df'].isna().sum()}'
         assert ss['atp_players_df'].isna().sum().sum() == 0, f'nan values in players\n{ss['atp_players_df'].isna().sum()}'
@@ -85,10 +91,13 @@ class Simulation:
                 'elo_grass_rating': initial_elo, 
                 'elo_carpet_rating': initial_elo, 
                 'elo_unknown_rating': initial_elo,
+                'max_elo_rating': initial_elo,
+                'min_elo_rating': initial_elo,
                 'n_games': 0,
                 'last_game': None,
                 'n_wins': 0,
-                'n_losses': 0
+                'n_losses': 0,
+                'n_titles': 0
             } for player_id in players_df['player_id']}
 
         elo_history_list = []
@@ -143,12 +152,22 @@ class Simulation:
             all_players_dic[winner_id][elo_surface] = old_swr + k*(Sw - mu_sw)
             all_players_dic[loser_id][elo_surface] = old_slr + k*(Sl - mu_sl)
 
+            # Stats
             all_players_dic[loser_id]['n_games'] += 1
             all_players_dic[loser_id]['last_game'] = match_date
             all_players_dic[winner_id]['n_games'] += 1
             all_players_dic[winner_id]['last_game'] = match_date
             all_players_dic[winner_id]['n_wins'] += 1
             all_players_dic[loser_id]['n_losses'] += 1
+            if winner_new_elo > all_players_dic[winner_id]['max_elo_rating']:
+                all_players_dic[winner_id]['max_elo_rating'] = winner_new_elo
+            if loser_new_elo < all_players_dic[loser_id]['min_elo_rating']:
+                all_players_dic[loser_id]['min_elo_rating'] = loser_new_elo
+            if m['round'] == 'F':
+                all_players_dic[winner_id]['n_titles'] += 1
+
+            
+
             assert all_players_dic[winner_id]['n_games'] == all_players_dic[winner_id]['n_wins'] + all_players_dic[winner_id]['n_losses'],\
                 f"Error: n_games != n_wins + n_losses -> {all_players_dic[winner_id]['n_games']} != {all_players_dic[winner_id]['n_wins']} + {all_players_dic[winner_id]['n_losses']}"
 
@@ -505,4 +524,3 @@ class Plots:
 
         return None
             
-        
