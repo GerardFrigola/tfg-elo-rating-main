@@ -4,6 +4,8 @@ import time
 from datetime import datetime
 import altair as alt
 from streamlit import session_state as ss
+import requests
+from io import BytesIO
 from pandas.api.types import (
     is_categorical_dtype,
     is_datetime64_any_dtype,
@@ -471,4 +473,38 @@ class Plots:
         
         st.altair_chart(chart, use_container_width=True)
 
-    
+    def get_player_image_bytes(wikidata_id):
+        url = f"https://www.wikidata.org/wiki/Special:EntityData/{wikidata_id}.json"
+        response = requests.get(url)
+
+        if response.status_code != 200:
+            st.write(f"Error fetching data for {wikidata_id}: {response.status_code}")
+            return None
+
+        try:
+            data = response.json()
+        except requests.exceptions.JSONDecodeError:
+            st.write(f"Failed to parse JSON for {wikidata_id}")
+            return None
+
+        claims = data["entities"].get(wikidata_id, {}).get("claims", {})
+        if "P18" in claims:
+            image_name = claims["P18"][0]["mainsnak"]["datavalue"]["value"]
+            image_url = f"https://commons.wikimedia.org/wiki/Special:FilePath/{image_name}"
+        
+            headers = {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36"
+            }
+            img_data = requests.get(image_url, headers=headers)
+
+            # Check for successful response (200 status code)
+            if img_data.status_code == 200:
+                bytes_image = BytesIO(img_data.content)
+                return bytes_image
+            else:
+                st.write(f"❌ Failed to download image for {wikidata_id}: {img_data.status_code}")
+                return None
+
+        return None
+            
+        

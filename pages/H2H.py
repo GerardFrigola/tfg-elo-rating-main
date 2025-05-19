@@ -2,6 +2,9 @@ import pandas as pd
 import streamlit as st
 import streamlit_extras as stx
 from streamlit import session_state as ss
+from io import BytesIO
+import requests
+from utils import Plots as plot
 
 st.set_page_config(
     page_title='Elo Rating al Tennis',
@@ -45,54 +48,79 @@ player2_id = atp_player_dict_options[player2_name]
 # Què vull ensenyar?
 # nom, partits jugats, partits guanyats, partits perduts, percentatge de victòries, Elo rating
 player1_info = ss['atp_ranking'][ss['atp_ranking']['player_id'] == player1_id]
-col11, col12 = col1.columns([1, 1])
 
-col11.markdown(f"""
-    <p style='text-align: left; font-size: 24px;'>Elo Rating</p>
-    <p style='text-align: left; font-weight: bold; font-size: 32px;'>{(player1_info["Elo Rating"].values[0])}</p>
+image1 = plot.get_player_image_bytes(player1_info['wikidata_id'].values[0])
+if image1 is None:
+    image1 = 'default_no_profile_pic.png'
+
+col1.image(image1, width=250)
+
+
+col1.markdown(f"""
+    <div style='display: flex; justify-content: space-between; font-size: 24px;'>
+        <span style='text-align: left;'>Elo Rating</span>
+        <span style='text-align: right; font-weight: bold;'>{player1_info["Elo Rating"].values[0]}</span>
+    </div>
+    """, unsafe_allow_html=True)
+
+col1.markdown(f"""
+    <div style='display: flex; justify-content: space-between; font-size: 24px;'>
+        <span style='text-align: left;'>Nombre de partits</span>
+        <span style='text-align: right; font-weight: bold; font-size: 32px;'>{player1_info["n_games"].values[0]}</span>
+    </div>
     """, unsafe_allow_html=True
 )
-
-col12.markdown(f"""
-    <p style='text-align: right; font-size: 24px;'>Nombre de partits</p>
-    <p style='text-align: right; font-weight: bold; font-size: 32px;'>{player1_info["n_games"].values[0]}</p>
+col1.markdown(f"""
+    <div style='display: flex; justify-content: space-between; font-size: 24px;'>
+        <span style='text-align: left;'>Nombre de victòries</span>
+        <span style='text-align: right; font-weight: bold; font-size: 32px;'>{player1_info["n_wins"].values[0]}</span>
+    </div>
     """, unsafe_allow_html=True
 )
-
-col11.markdown(f"""
-    <p style='text-align: left; font-size: 20px;'>Nombre de victòries</p>
-    <p style='text-align: left; font-weight: bold; font-size: 32px;'>{player1_info["n_wins"].values[0]}</p>
-    """, unsafe_allow_html=True
-)
-col12.markdown(f"""
-    <p style='text-align: right; font-size: 20px;'>Nombre de derrotes</p>
-    <p style='text-align: right; font-weight: bold; font-size: 32px;'>{player1_info["n_losses"].values[0]}</p>
+col1.markdown(f"""
+    <div style='display: flex; justify-content: space-between; font-size: 24px;'>
+        <span style='text-align: left;'>Nombre de derrotes</span>
+        <span style='text-align: right; font-weight: bold; font-size: 32px;'>{player1_info["n_losses"].values[0]}</span>
+    </div>
     """, unsafe_allow_html=True
 )
 
 
 # PLAYER 2
 player2_info = ss['atp_ranking'][ss['atp_ranking']['player_id'] == player2_id]
-col21, col22 = col2.columns([1, 1])
-col21.markdown(f"""
-    <p style='text-align: left; font-size: 24px;'>Elo Rating</p>
-    <p style='text-align: left; font-weight: bold; font-size: 32px;'>{(player2_info["Elo Rating"].values[0])}</p>
-    """, unsafe_allow_html=True
-)
 
-col22.markdown(f"""
-    <p style='text-align: right; font-size: 24px;'>Nombre de partits</p>
-    <p style='text-align: right; font-weight: bold; font-size: 32px;'>{player2_info["n_games"].values[0]}</p>
-    """, unsafe_allow_html=True
-)
+image2 = plot.get_player_image_bytes(player2_info['wikidata_id'].values[0])
+if image2 is None:
+    image2 = 'default_no_profile_pic.png'
 
-col21.markdown(f"""
-    <p style='text-align: left; font-size: 20px;'>Nombre de victòries</p>
-    <p style='text-align: left; font-weight: bold; font-size: 32px;'>{player2_info["n_wins"].values[0]}</p>
+col2.image(image2, width=200)
+
+
+col2.markdown(f"""
+    <div style='display: flex; justify-content: space-between; font-size: 24px;'>
+        <span style='text-align: left;'>Elo Rating</span>
+        <span style='text-align: right; font-weight: bold;'>{player2_info["Elo Rating"].values[0]}</span>
+    </div>
+    """, unsafe_allow_html=True)
+
+col2.markdown(f"""
+    <div style='display: flex; justify-content: space-between; font-size: 24px;'>
+        <span style='text-align: left;'>Nombre de partits</span>
+        <span style='text-align: right; font-weight: bold; font-size: 32px;'>{player2_info["n_games"].values[0]}</span>
+    </div>
     """, unsafe_allow_html=True
 )
-col22.markdown(f"""
-    <p style='text-align: right; font-size: 20px;'>Nombre de derrotes</p>
-    <p style='text-align: right; font-weight: bold; font-size: 32px;'>{player2_info["n_losses"].values[0]}</p>
+col2.markdown(f"""
+    <div style='display: flex; justify-content: space-between; font-size: 24px;'>
+        <span style='text-align: left;'>Nombre de victòries</span>
+        <span style='text-align: right; font-weight: bold; font-size: 32px;'>{player2_info["n_wins"].values[0]}</span>
+    </div>
+    """, unsafe_allow_html=True
+)
+col2.markdown(f"""
+    <div style='display: flex; justify-content: space-between; font-size: 24px;'>
+        <span style='text-align: left;'>Nombre de derrotes</span>
+        <span style='text-align: right; font-weight: bold; font-size: 32px;'>{player2_info["n_losses"].values[0]}</span>
+    </div>
     """, unsafe_allow_html=True
 )
