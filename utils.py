@@ -496,7 +496,7 @@ class Plots:
 
 
     def get_player_image_bytes(wikidata_id):
-    
+        st.markdown('<h1 style="text-align: center; color: black;">Porongol</h1>', unsafe_allow_html=True)
         famous_players = {
             'Q1426', # Roger Federer
             'Q5812', # Novak Djokovick
