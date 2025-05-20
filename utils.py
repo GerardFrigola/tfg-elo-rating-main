@@ -4,6 +4,8 @@ import altair as alt
 from streamlit import session_state as ss
 import requests
 from io import BytesIO
+import math
+from PIL import Image
 from pandas.api.types import (
     is_categorical_dtype,
     is_datetime64_any_dtype,
@@ -11,10 +13,11 @@ from pandas.api.types import (
     is_object_dtype,
 )
 
+
 class Simulation:
     def initialize_session_satate():
         if 'atp_matches_df' not in ss:
-            ss['atp_matches_df'] = pd.read_csv('web_data/clean_atp_matches.csv')
+            ss['atp_matches_df'] = pd.read_csv('web_data/clean_atp_matches.csv').set_index('match_id')
 
         if 'wta_matches_df' not in ss:
             ss['wta_matches_df'] = pd.read_csv('web_data/clean_wta_matches.csv')
@@ -490,19 +493,68 @@ class Plots:
         
         st.altair_chart(chart, use_container_width=True)
 
+
+
     def get_player_image_bytes(wikidata_id):
+    
+        famous_players = {
+            'Q1426', # Roger Federer
+            'Q5812', # Novak Djokovick
+            'Q10132', # Rafa Nadal
+            'Q104506',
+            'Q180535',
+            'Q186429',
+            'Q192801',
+            'Q3720084',
+            'Q13990552',
+            'Q17660616',
+            'Q24450982',
+            'Q54812588',
+            'Q65030599',
+            'Q85518537'
+        }
+
+        def square_image(image, height=300, width=300):
+            image_width, image_height = image.size
+
+            if image_width == image_height:
+                return image
+        
+
+            if image_width > image_height:
+                diff = (image_width - image_height)/2
+                left = math.floor(diff)
+                right = image_width - math.ceil(diff)
+                top = 0
+                bottom = image_height
+         
+            
+            if image_height > image_width:
+                diff = image_height - image_width
+                top = math.ceil(diff * 0.2)
+                bottom = image_height - math.floor(diff * 0.8)
+                left = 0
+                right = image_width
+
+            squared_img = image.crop((left, top, right, bottom))
+
+            return squared_img
+        
+        if wikidata_id in famous_players:
+            return f'web_data/famous_players_pics/{wikidata_id}.png'
+
         url = f"https://www.wikidata.org/wiki/Special:EntityData/{wikidata_id}.json"
         response = requests.get(url)
 
         if response.status_code != 200:
             st.write(f"Error fetching data for {wikidata_id}: {response.status_code}")
-            return None
+            return 'web_data/famous_players_pics/default_no_profile_pic.png'
 
         try:
             data = response.json()
         except requests.exceptions.JSONDecodeError:
             st.write(f"Failed to parse JSON for {wikidata_id}")
-            return None
+            return 'web_data/famous_players_pics/default_no_profile_pic.png'
 
         claims = data["entities"].get(wikidata_id, {}).get("claims", {})
         if "P18" in claims:
@@ -517,10 +569,13 @@ class Plots:
             # Check for successful response (200 status code)
             if img_data.status_code == 200:
                 bytes_image = BytesIO(img_data.content)
-                return bytes_image
+
+                with Image.open(bytes_image) as img:
+                    return square_image(img)
+                
             else:
                 st.write(f"❌ Failed to download image for {wikidata_id}: {img_data.status_code}")
-                return None
+                return 'web_data/famous_players_pics/default_no_profile_pic.png'
 
-        return None
+        return 'web_data/famous_players_pics/default_no_profile_pic.png'
             

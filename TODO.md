@@ -17,3 +17,5 @@
 - [ ] Veure el ranking en una data concreta. Que pugui anar avançant temporalment manualment el ranking (per exemple setmana a setmana)
 - [ ] mirar el surface rating crec que no funciona. 
 - [ ] botó save ranking
+- [ ] Treure la columna unamed0 de matches
+- [ ] Opció no mostrar jugadors retirats

@@ -10,26 +10,11 @@ st.set_page_config(
     layout='wide',
     initial_sidebar_state="expanded"
 )
-sim.initialize_session_satate()
-css='''
-[data-testid="metric-container"] {
-    width: fit-content;
-    margin: auto;
-}
+# sim.initialize_session_satate()
 
-[data-testid="metric-container"] > div {
-    width: fit-content;
-    margin: auto;
-}
-
-[data-testid="metric-container"] label {
-    width: fit-content;
-    margin: auto;
-}
-'''
 st.markdown('<h1 style="text-align: center; color: black;">Comparador de jugadors</h1>', unsafe_allow_html=True)
 # st.markdown('<h2 style="text-align: center; color: black;">ATP</h2>', unsafe_allow_html=True)
-col1, col2, col3 = st.columns([1, 2, 1])
+col1, _, col2, _, col3 = st.columns([1, 0.2, 2, 0.2, 1])
 
 atp_player_dict_options = {
     name: player_id
@@ -49,13 +34,9 @@ player1_info = ss['atp_ranking'][ss['atp_ranking']['player_id'] == player1_id]
 player2_info = ss['atp_ranking'][ss['atp_ranking']['player_id'] == player2_id]
 
 image1 = plot.get_player_image_bytes(player1_info['wikidata_id'].values[0])
-if image1 is None:
-    image1 = 'default_no_profile_pic.png'
 col1.image(image1, use_container_width=True)
 
 image2 = plot.get_player_image_bytes(player2_info['wikidata_id'].values[0])
-if image2 is None:
-    image2 = 'default_no_profile_pic.png'
 col3.image(image2, use_container_width=True)
 
 wins_1vs2 = ss['atp_matches_df'][(ss['atp_matches_df']['winner_id']==player1_id) & (ss['atp_matches_df']['loser_id']==player2_id)].value_counts().sum()
@@ -67,8 +48,10 @@ col2.write('')
 col2.write('')
 
 # H2H:
+
+# Victòries enfrontament:
 col2.markdown(f"""
-    <div style='display: flex; justify-content: space-between; font-size: 40px;'>
+    <div style='display: flex; justify-content: space-between; font-size: 32px; border: 2px solid green; padding: 10px; border-radius: 5px;'>
         <span style='text-align: left; font-weight: bold;'>{wins_1vs2}</span>
         <span style='text-align: center; font-weight: bold;'>VICTÒRIES ENFRONTAMENT</span>
         <span style='text-align: right; font-weight: bold;'>{wins_2vs1}</span>
@@ -77,31 +60,22 @@ col2.markdown(f"""
 )
 col2.write('')
 col2.markdown(f"""
-    <div style='display: flex; justify-content: space-between; font-size: 24px;'>
+    <div style='display: flex; justify-content: space-between; font-size: 24px; border: 1px solid green; padding: 10px;'>
         <span style='text-align: left; font-weight: bold;'>{player1_info["Elo Rating"].values[0]:.0f}</span>
         <span style='text-align: center;'>ELO RATING</span>
         <span style='text-align: right; font-weight: bold;'>{player2_info["Elo Rating"].values[0]:.0f}</span>
     </div>
-    """, unsafe_allow_html=True
-)
-col2.markdown(f"""
-    <div style='display: flex; justify-content: space-between; font-size: 24px;'>
+    <div style='display: flex; justify-content: space-between; font-size: 24px; border: 1px solid green; padding: 10px;'>
         <span style='text-align: left; font-weight: bold;'>{player1_info["n_wins"].values[0]}/{player1_info["n_losses"].values[0]}</span>
         <span style='text-align: center;'>NOMBRE DE VICTÒRIES</span>
         <span style='text-align: right; font-weight: bold;'>{player2_info["n_wins"].values[0]}/{player2_info["n_losses"].values[0]}</span>
     </div>
-    """, unsafe_allow_html=True
-)
-col2.markdown(f"""
-    <div style='display: flex; justify-content: space-between; font-size: 24px;'>
+    <div style='display: flex; justify-content: space-between; font-size: 24px; border: 1px solid green; padding: 10px;'>
         <span style='text-align: left; font-weight: bold;'>{player1_info["n_titles"].values[0]}</span>
         <span style='text-align: left;'>NOMBRE DE TITOLS</span>
         <span style='text-align: right; font-weight: bold;'>{player2_info["n_titles"].values[0]}</span>
     </div>
-    """, unsafe_allow_html=True
-)
-col2.markdown(f"""
-    <div style='display: flex; justify-content: space-between; font-size: 24px;'>
+    <div style='display: flex; justify-content: space-between; font-size: 24px; border: 1px solid green; padding: 10px;'>
         <span style='text-align: left; font-weight: bold;'>{player1_info["max_elo_rating"].values[0]:.0f}</span>
         <span style='text-align: left;'>MAX ELO RATING</span>
         <span style='text-align: right; font-weight: bold;'>{player2_info["max_elo_rating"].values[0]:.0f}</span>
@@ -116,23 +90,14 @@ col1.markdown(f"""
         <span style='text-align: left;'>Rank</span>
         <span style='text-align: right; font-weight: bold;'>{player1_info["rank"].values[0]}</span>
     </div>
-    """, unsafe_allow_html=True
-)
-col1.markdown(f"""
     <div style='display: flex; justify-content: space-between; font-size: 24px;'>
         <span style='text-align: left;'>Mà</span>
         <span style='text-align: right; font-weight: bold;'>{player1_info["Hand"].values[0]}</span>
     </div>
-    """, unsafe_allow_html=True
-)
-col1.markdown(f"""
-    <div style='display: flex; justify-content: space-between; font-size: 24px;'>
+     <div style='display: flex; justify-content: space-between; font-size: 24px;'>
         <span style='text-align: left;'>País</span>
         <span style='text-align: right; font-weight: bold;'>{player1_info["Country"].values[0]}</span>
     </div>
-    """, unsafe_allow_html=True
-)
-col1.markdown(f"""
     <div style='display: flex; justify-content: space-between; font-size: 24px;'>
         <span style='text-align: left;'>Alçada</span>
         <span style='text-align: right; font-weight: bold;'>{player2_info["Height"].values[0]}cm</span>
@@ -146,29 +111,21 @@ col3.markdown(f"""
         <span style='text-align: left;'>Rank</span>
         <span style='text-align: right; font-weight: bold;'>{player2_info["rank"].values[0]}</span>
     </div>
-    """, unsafe_allow_html=True
-)
-col3.markdown(f"""
     <div style='display: flex; justify-content: space-between; font-size: 24px;'>
         <span style='text-align: left;'>Mà</span>
         <span style='text-align: right; font-weight: bold;'>{player2_info["Hand"].values[0]}</span>
     </div>
-    """, unsafe_allow_html=True
-)
-col3.markdown(f"""
     <div style='display: flex; justify-content: space-between; font-size: 24px;'>
         <span style='text-align: left;'>País</span>
         <span style='text-align: right; font-weight: bold;'>{player2_info["Country"].values[0]}</span>
     </div>
-    """, unsafe_allow_html=True
-)
-col3.markdown(f"""
     <div style='display: flex; justify-content: space-between; font-size: 24px;'>
         <span style='text-align: left;'>Alçada</span>
         <span style='text-align: right; font-weight: bold;'>{player2_info["Height"].values[0]}cm</span>
     </div>
     """, unsafe_allow_html=True
 )
+
 
 st.markdown('<h2 style="text-align: center; color: black;">Enfrontaments</h2>', unsafe_allow_html=True)
 
