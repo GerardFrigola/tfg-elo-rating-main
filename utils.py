@@ -17,7 +17,7 @@ from pandas.api.types import (
 class Simulation:
     def initialize_session_satate():
         if 'atp_matches_df' not in ss:
-            ss['atp_matches_df'] = pd.read_csv('web_data/clean_atp_matches.csv').set_index('match_id')
+            ss['atp_matches_df'] = pd.read_csv('web_data/clean_atp_matches.csv')
 
         if 'wta_matches_df' not in ss:
             ss['wta_matches_df'] = pd.read_csv('web_data/clean_wta_matches.csv')
@@ -34,6 +34,12 @@ class Simulation:
         if 'wta_ranking' not in ss:
             ss['wta_ranking'] = pd.read_csv('web_data/wta_initial_ranking.csv')
 
+        if 'atp_nofiltered_ranking' not in ss:
+            ss['atp_nofiltered_ranking'] = pd.read_csv('web_data/atp_initial_nofiltered_ranking.csv')
+
+        if 'wta_nofiltered_ranking' not in ss:
+            ss['wta_nofiltered_ranking'] = pd.read_csv('web_data/wta_initial_nofiltered_ranking.csv')
+
         if 'atp_elo_history' not in ss:
             ss['atp_elo_history'] = pd.read_csv('web_data/atp_initial_elo_history.csv')
 
@@ -47,8 +53,8 @@ class Simulation:
             ss['atp_end_year'] = 2024
 
         if 'atp_selected_player_names' not in ss: # Seleccionem els 5 primers. 
-            names = ss['atp_ranking'].nlargest(5, 'Elo Rating')['First Name'].to_list()
-            surnames = ss['atp_ranking'].nlargest(5, 'Elo Rating')['Last Name'].to_list()
+            names = ss['atp_ranking'].nlargest(5, 'elo_rating')['First Name'].to_list()
+            surnames = ss['atp_ranking'].nlargest(5, 'elo_rating')['Last Name'].to_list()
             ss['atp_selected_player_names'] = [n + ' ' + s for n, s in zip(names, surnames)]
 
         if 'wta_start_year' not in ss:
@@ -58,15 +64,10 @@ class Simulation:
             ss['wta_end_year'] = 2024
 
         if 'wta_selected_player_names' not in ss: # Seleccionem les 5 primeres. 
-            names = ss['wta_ranking'].nlargest(5, 'Elo Rating')['First Name'].to_list()
-            surnames = ss['wta_ranking'].nlargest(5, 'Elo Rating')['Last Name'].to_list()
+            names = ss['wta_ranking'].nlargest(5, 'elo_rating')['First Name'].to_list()
+            surnames = ss['wta_ranking'].nlargest(5, 'elo_rating')['Last Name'].to_list()
             ss['wta_selected_player_names'] = [n + ' ' + s for n, s in zip(names, surnames)]
         
-        if 'h2h_player1' not in ss: 
-            ss['h2h_player1'] = 'Jannik Sinner'
-
-        if 'h2h_player2' not in ss: 
-            ss['h2h_player2'] = 'Carlos Alcaraz'
 
         assert ss['atp_matches_df'].isna().sum().sum() == 0, f'nan values in matches\n{ss['atp_matches_df'].isna().sum()}'
         assert ss['atp_players_df'].isna().sum().sum() == 0, f'nan values in players\n{ss['atp_players_df'].isna().sum()}'
@@ -74,7 +75,7 @@ class Simulation:
         assert ss['wta_players_df'].isna().sum().sum() == 0, f'nan values in players\n{ss['wta_players_df'].isna().sum()}'
 
 
-    def simulate_tour(tour_df:pd.DataFrame, players_df:pd.DataFrame, k, ksi, s, initial_elo, min_games, year_to_simulate): 
+    def simulate_tour(tour_df:pd.DataFrame, players_df:pd.DataFrame, k, ksi, s, initial_elo, min_games, year_to_simulate, rmv_retired): 
         assert tour_df.isna().sum().sum() == 0, f'nan values in tour_df\n{tour_df.isna().sum()}'
 
         total_matches = len(tour_df)
@@ -196,25 +197,32 @@ class Simulation:
             .sort_values(by='elo_rating', ascending=False)\
             .reset_index(drop=True)\
             .drop(columns=['elo_unknown_rating'])\
-            .round(0)\
-            .rename(columns={
-                'elo_rating': 'Elo Rating', 
-                'elo_clay_rating': 'Clay Elo Rating', 
-                'elo_hard_rating': 'Hard Elo Rating', 
-                'elo_grass_rating': 'Grass Elo Rating', 
-                'elo_carpet_rating': 'Carpet Elo Rating'
-            })
+            .round(0)
 
+        # Filtrar mínim de partits
+        ranking_filtered = ranking[(ranking['n_games']>min_games)]
+        ranking_no_filtered = ranking.copy()
 
-        ranking_filtered = ranking[(ranking['n_games']>min_games)]# & (ranking['last_game'] > '2023-01-01')].reset_index(drop=True)
+        # Filtrar retirats
+        if rmv_retired:
+            ranking_filtered = ranking[(ranking['last_game'] > '2024-01-01')].reset_index(drop=True)
 
         ranking_filtered['rank'] = ranking_filtered.index + 1
+
+        # Diccionari {player_id: rank} de ranking_filtered
+        rank_mapping = ranking_filtered.set_index('player_id')['rank'].to_dict()
+        # Assignem el rank al df no filtrat
+        ranking_no_filtered['rank'] = ranking_no_filtered['player_id'].map(rank_mapping)
+        # Els jugadors que no estan al ranking filtrat no tenen rank ('-')
+        ranking_no_filtered['rank'] = ranking_no_filtered['rank'].fillna(-1).astype(int)
+        ranking_no_filtered['rank'] = ranking_no_filtered['rank'].replace(-1, '-')
+
 
         elo_history_df = pd.DataFrame(elo_history_list)\
                             .astype({'date': 'datetime64[ns]'})
         placeholder.empty()
 
-        return ranking_filtered, elo_history_df
+        return ranking_filtered, ranking_no_filtered, elo_history_df
 
 
 class Filter:
@@ -254,7 +262,7 @@ class Filter:
         numerical_columns = ['tour_year']
         datetime_columns = ['tourney_date']
         with modification_container:
-            to_filter_columns = st.multiselect("Filter dataframe on", cols_to_filter, key='atp_multiselect_filter')
+            to_filter_columns = st.multiselect("Filtrar partits per...", cols_to_filter, key='atp_multiselect_filter', placeholder='Escull les columnes a filtrar')
             for column in to_filter_columns:
                 left, right = st.columns((1, 20))
 
@@ -345,6 +353,7 @@ class Filter:
         categorical_columns = ['tourney_name', 'surface', 'round', 'tourney_level', 'winner_name', 'loser_name']
         numerical_columns = ['tour_year']
         datetime_columns = ['tourney_date']
+
         with modification_container:
             to_filter_columns = st.multiselect("Filtrar partits per les columnes:", cols_to_filter, key='wta_multiselect_filter', placeholder='Selecciona les columnes a filtrar')
             for column in to_filter_columns:
@@ -405,12 +414,12 @@ class Filter:
 class Plots: 
         
     def plot_elos_histogram(ranking, col2):
-        elos = ranking['Elo Rating'].tolist()
-        data = pd.DataFrame({'Elo Rating': elos})
-        mean_value = data['Elo Rating'].mean()  # Calculate the mean
+        elos = ranking['elo_rating'].tolist()
+        data = pd.DataFrame({'elo_rating': elos})
+        mean_value = data['elo_rating'].mean()  # Calculate the mean
 
         histogram = alt.Chart(data).mark_bar().encode(
-            alt.X('Elo Rating:Q', bin=alt.Bin(maxbins=40), title='Elo Rating'),
+            alt.X('elo_rating:Q', bin=alt.Bin(maxbins=40), title='elo_rating'),
             alt.Y('count()', title='Frequència')
         ).properties(
             title=alt.TitleParams(text="Distribució de puntuacions", anchor='middle', fontSize=20, fontWeight='bold'),
@@ -496,7 +505,7 @@ class Plots:
 
 
     def get_player_image_bytes(wikidata_id):
-        st.markdown('<h1 style="text-align: center; color: black;">Porongol</h1>', unsafe_allow_html=True)
+
         famous_players = {
             'Q1426', # Roger Federer
             'Q5812', # Novak Djokovick

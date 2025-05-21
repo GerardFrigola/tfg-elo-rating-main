@@ -15,15 +15,17 @@ st.set_page_config(
 sim.initialize_session_satate()
 
 # Functions \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-def values_changed(placeholder):
-    placeholder.sidebar.markdown(':orange[El valor dels paràmetres ha canviat. Torna a llançar la simulació per veure els resultats.]')
+def values_changed():
+    st.sidebar.markdown(':orange[El valor dels paràmetres ha canviat. Torna a llançar la simulació per veure els resultats.]')
 # //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 # Sidebar \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 with st.sidebar:
     st.title('Filtres')
+    placeholder=st.empty()
     run_simulation = st.button('Llença la simulació', type='primary')
+    rmv_retired = st.checkbox(label='Treure jugadors retirats', value=True, on_change=values_changed, help='Treu els jugadors retirats del ranking final')
     k = st.number_input('Paràmetre K', min_value=1, max_value=200, step=1, value=24, placeholder='Enter a integer', on_change=values_changed, help='El paràmetre K controla la quantitat de canvi en el rànquing d\'un jugador després d\'una victòria o derrota. Un valor més alt significa que el rànquing canvia més ràpidament i que la distribució final de puntuacións serà més plana i ampla.')
     ksi = st.number_input('Paràmetre xi', min_value=100, max_value=1000, step=1, value=400, placeholder='Enter a integer', on_change=values_changed, help='Una diferència de <xi> punts entre dos jugadors significa que el jugador amb la puntuació més alta és deu vegades més probable que guanyi a l\'altre jugador. Un valor més alt significa que el rànquing és més sensible a les diferències de puntuació entre jugadors.')
     s = st.selectbox('Input score type:', options=['delta', 'thirds'], index=0, on_change=values_changed, help='delta: Els nombre de punts que guanya el guanyador és el mateix que els que perd el perdedor  |  thirds: El nombre de punts que guanya el guanyador és el doble dels que perd el perdedor. Per tant, el guanyador guanya 2/3 dels punts i el perdedor en perd 1/3.')
@@ -49,9 +51,9 @@ atp_tab, wta_tab = st.tabs(['ATP', 'WTA'])
 
 with atp_tab:
     if run_simulation:
-        ss['atp_ranking'], ss['atp_elo_history'] = sim.simulate_tour(ss['atp_matches_df'], ss['atp_players_df'], k, ksi, s, initial_elo, min_games, year_to_simulate)
+        ss['atp_ranking'], ss['atp_nofiltered_ranking'], ss['atp_elo_history'] = sim.simulate_tour(ss['atp_matches_df'], ss['atp_players_df'], k, ksi, s, initial_elo, min_games, year_to_simulate, rmv_retired)
 
-    top_five = ss['atp_ranking'].nlargest(5, 'Elo Rating')
+    top_five = ss['atp_ranking'].nlargest(5, 'elo_rating')
     top_five_options = {
         name: player_id
         for name, player_id in zip(
@@ -71,19 +73,19 @@ with atp_tab:
     # RANKING:
     st.markdown("<h2 style='text-align: center; color: black;'>Ranking</h2>", unsafe_allow_html=True)
 
-    col1, col2 = st.columns([1, 2])
+    col1, col2 = st.columns([2, 1])
     col1.write(ss['atp_ranking'][
         ['rank',
         'First Name', 
         'Last Name', 
-        'Elo Rating', 
+        'elo_rating', 
         'Hand',
         'Country', 
         'Height', 
-        'Clay Elo Rating', 
-        'Hard Elo Rating', 
-        'Grass Elo Rating', 
-        'Carpet Elo Rating', 
+        'elo_clay_rating', 
+        'elo_hard_rating', 
+        'elo_grass_rating', 
+        'elo_carpet_rating', 
         'player_id',
         'last_game',
         'n_games']
@@ -122,9 +124,9 @@ with atp_tab:
 
 with wta_tab: 
     if run_simulation:
-        ss['wta_ranking'], ss['wta_elo_history'] = sim.simulate_tour(ss['wta_matches_df'], ss['wta_players_df'], k, ksi, s, initial_elo, min_games, year_to_simulate)
+        ss['wta_ranking'], ss['wta_nofiltered_ranking'], ss['wta_elo_history'] = sim.simulate_tour(ss['wta_matches_df'], ss['wta_players_df'], k, ksi, s, initial_elo, min_games, year_to_simulate, rmv_retired)
 
-    top_five = ss['wta_ranking'].nlargest(5, 'Elo Rating')
+    top_five = ss['wta_ranking'].nlargest(5, 'elo_rating')
     top_five_options = {
         name: player_id
         for name, player_id in zip(
@@ -145,19 +147,19 @@ with wta_tab:
     placeholder = st.empty()
     st.markdown("<h2 style='text-align: center; color: black;'>Ranking</h2>", unsafe_allow_html=True)
 
-    col1, col2 = st.columns([1, 2])
+    col1, col2 = st.columns([2, 1])
     col1.write(ss['wta_ranking'][
         ['rank',
         'First Name', 
         'Last Name', 
-        'Elo Rating', 
+        'elo_rating', 
         'Hand',
         'Country', 
         'Height', 
-        'Clay Elo Rating', 
-        'Hard Elo Rating', 
-        'Grass Elo Rating', 
-        'Carpet Elo Rating', 
+        'elo_clay_rating', 
+        'elo_hard_rating', 
+        'elo_grass_rating', 
+        'elo_carpet_rating', 
         'player_id',
         'last_game',
         'n_games']

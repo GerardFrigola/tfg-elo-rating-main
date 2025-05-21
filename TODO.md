@@ -19,3 +19,5 @@
 - [ ] botó save ranking
 - [ ] Treure la columna unamed0 de matches
 - [ ] Opció no mostrar jugadors retirats
+- [ ] Documentar codi i funcions
+- [ ] stats: palmarès,
