@@ -13,8 +13,8 @@ st.set_page_config(
 # sim.initialize_session_satate()
 
 st.markdown('<h1 style="text-align: center; color: black;">Comparador de jugadors</h1>', unsafe_allow_html=True)
-# st.markdown('<h2 style="text-align: center; color: black;">ATP</h2>', unsafe_allow_html=True)
-atp_tab, wta_tab = st.tabs(['ATP', 'WTA'])
+
+atp_tab, wta_tab = st.tabs(['Masc.', 'Fem.'])
 
 
 with atp_tab:

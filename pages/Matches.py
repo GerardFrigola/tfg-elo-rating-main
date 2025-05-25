@@ -15,7 +15,7 @@ sim.initialize_session_satate()
 
 st.markdown("<h1 style='text-align: center; color: black;'>Cercador de partits</h1>", unsafe_allow_html=True)
 
-atp_tab, wta_tab = st.tabs(['ATP', 'WTA'])
+atp_tab, wta_tab = st.tabs(['Masc.', 'Fem.'])
 
 with atp_tab:
     st.markdown("<h2 style='text-align: center; color: black;'>ATP</h1>", unsafe_allow_html=True)
@@ -58,8 +58,8 @@ with wta_tab:
     ].set_index('match_id'))
 
     st.divider()
-    st.markdown("<h2 style='text-align: center; color: black;'>Afegir selecció de partit per veure les stats: </h2>", unsafe_allow_html=True)
+    # st.markdown("<h2 style='text-align: center; color: black;'>Afegir selecció de partit per veure les stats: </h2>", unsafe_allow_html=True)
 
-    st.selectbox(label='Selecciona o escriu un match_id per veure estadístiques', options=filtered_wta_matches['match_id'].unique(), index=None, key='wta_matches_select_box')
+    # st.selectbox(label='Selecciona o escriu un match_id per veure estadístiques', options=filtered_wta_matches['match_id'].unique(), index=None, key='wta_matches_select_box')
 
     

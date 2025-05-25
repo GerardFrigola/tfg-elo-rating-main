@@ -47,7 +47,7 @@ sim.initialize_session_satate()
 # Main page #############################################################################################################
 
 st.markdown("<h1 style='text-align: center; color: black;'>Elo Rating al Tennis</h1>", unsafe_allow_html=True)
-atp_tab, wta_tab = st.tabs(['ATP', 'WTA'])
+atp_tab, wta_tab = st.tabs(['Masc.', 'Fem.'])
 
 with atp_tab:
     if run_simulation:
