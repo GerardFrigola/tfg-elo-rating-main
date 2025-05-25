@@ -10,7 +10,7 @@ st.set_page_config(
     layout='wide',
     initial_sidebar_state="expanded"
 )
-# sim.initialize_session_satate()
+sim.initialize_session_satate()
 
 st.markdown('<h1 style="text-align: center; color: black;">Comparador de jugadors</h1>', unsafe_allow_html=True)
 
