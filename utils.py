@@ -114,18 +114,39 @@ class Simulation:
                 year = m['tour_year']
 
             # Update elo ratings
-            match s:
-                case 'delta':
-                    Sw = 1
-                    Sl = 0
-
-                case 'thirds': 
-                    if m['best_of'] != m['num_sets'] or m['best_of'] == 1:
-                        Sw = 1
-                        Sl = 0
-                    else: 
-                        Sw = 2/3
-                        Sl = 1/3
+            best_of = m['best_of']
+            num_sets = m['num_sets']
+            
+            if s == 'delta':
+                Sw = 1
+                Sl = 0
+            
+            # S_{ij} = (P_{ij}+1) / num_sets + 2)
+            elif s == 'thirds': 
+                if best_of == 1 or num_sets == 1:    
+                    Sw = 2/3
+                    Sl = 1/3
+                elif best_of == 3:
+                    if num_sets == 2: # 2-0
+                        Sw = 3/4
+                        Sl = 1/4
+                    if num_sets == 3: # 2-1
+                        Sw = 3/5
+                        Sl = 2/5
+                elif best_of == 5:
+                    if num_sets == 3: # 3-0
+                        Sw = 4/5
+                        Sl = 1/5
+                    if num_sets == 4: # 3-1
+                        Sw = 4/6
+                        Sl = 2/6
+                    if num_sets == 5: # 3-2
+                        Sw = 4/7
+                        Sl = 3/7
+                else:
+                    raise Exception(f"Best_of must be 1, 3 or 5. {best_of} passed")
+            else:
+                raise Exception(f"Score must be 'delta' or 'thirds'. {s} passed.")
 
             
             # Algorisme per calcular elo-ratings
@@ -340,7 +361,7 @@ class Filter:
         for col in df.columns:
             if is_object_dtype(df[col]):
                 try:
-                    df[col] = pd.to_datetime(df[col])
+                    df[col] = pd.to_datetime(df[col]) # type: ignore
                 except Exception:
                     pass
 
