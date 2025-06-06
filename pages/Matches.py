@@ -35,9 +35,6 @@ with atp_tab:
     ].set_index('match_id'))
 
     st.divider()
-    st.markdown("<h2 style='text-align: center; color: black;'>Afegir selecció de partit per veure les stats: </h2>", unsafe_allow_html=True)
-
-    st.selectbox(label='Selecciona o escriu un match_id per veure estadístiques', options=filtered_atp_matches['match_id'].unique(), index=None, key='atp_matches_select_box')
 
 with wta_tab:
     st.markdown("<h2 style='text-align: center; color: black;'>WTA</h1>", unsafe_allow_html=True)
