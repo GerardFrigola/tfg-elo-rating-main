@@ -58,8 +58,5 @@ with wta_tab:
     ].set_index('match_id'))
 
     st.divider()
-    # st.markdown("<h2 style='text-align: center; color: black;'>Afegir selecció de partit per veure les stats: </h2>", unsafe_allow_html=True)
-
-    # st.selectbox(label='Selecciona o escriu un match_id per veure estadístiques', options=filtered_wta_matches['match_id'].unique(), index=None, key='wta_matches_select_box')
-
+ 
     
