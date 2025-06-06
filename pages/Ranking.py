@@ -51,7 +51,7 @@ atp_tab, wta_tab = st.tabs(['Masc.', 'Fem.'])
 
 with atp_tab:
     if run_simulation:
-        ss['atp_ranking'], ss['atp_nofiltered_ranking'], ss['atp_elo_history'] = sim.simulate_tour(ss['atp_matches_df'], ss['atp_players_df'], k, ksi, s, initial_elo, min_games, year_to_simulate, rmv_retired)
+        ss['atp_ranking'], ss['atp_nofiltered_ranking'], ss['atp_elo_history'] = sim.simulate_atp_tour(ss['atp_matches_df'], ss['atp_players_df'], k, ksi, s, initial_elo, min_games, year_to_simulate, rmv_retired)
 
     top_five = ss['atp_ranking'].nlargest(5, 'elo_rating')
     top_five_options = {
@@ -124,7 +124,7 @@ with atp_tab:
 
 with wta_tab: 
     if run_simulation:
-        ss['wta_ranking'], ss['wta_nofiltered_ranking'], ss['wta_elo_history'] = sim.simulate_tour(ss['wta_matches_df'], ss['wta_players_df'], k, ksi, s, initial_elo, min_games, year_to_simulate, rmv_retired)
+        ss['wta_ranking'], ss['wta_nofiltered_ranking'], ss['wta_elo_history'] = sim.simulate_wta_tour(ss['wta_matches_df'], ss['wta_players_df'], k, ksi, s, initial_elo, min_games, year_to_simulate, rmv_retired)
 
     top_five = ss['wta_ranking'].nlargest(5, 'elo_rating')
     top_five_options = {

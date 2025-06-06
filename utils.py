@@ -75,7 +75,177 @@ class Simulation:
         assert ss['wta_players_df'].isna().sum().sum() == 0, f'nan values in players\n{ss['wta_players_df'].isna().sum()}'
 
 
-    def simulate_tour(tour_df:pd.DataFrame, players_df:pd.DataFrame, k, ksi, s, initial_elo, min_games, year_to_simulate, rmv_retired): 
+    def simulate_atp_tour(tour_df:pd.DataFrame, players_df:pd.DataFrame, k, ksi, s, initial_elo, min_games, year_to_simulate, rmv_retired): 
+        assert tour_df.isna().sum().sum() == 0, f'nan values in tour_df\n{tour_df.isna().sum()}'
+
+        total_matches = len(tour_df)
+        placeholder = st.empty()
+        placeholder.markdown(f"<h6 style='text-align: center; color: black;'>Simulant {total_matches} partits. Trigarà entre 10 i 20 segons.</h6>", unsafe_allow_html=True)
+
+        tour_df = tour_df.sort_values(by='tourney_date', ascending=True)
+
+        if year_to_simulate != 'Tots': 
+            tour_df = tour_df[tour_df['tour_year']==year_to_simulate]
+
+        all_players_dic = {player_id: {
+                'player_id': player_id, 
+                'elo_rating': initial_elo, 
+                'elo_clay_rating': initial_elo, 
+                'elo_hard_rating': initial_elo, 
+                'elo_grass_rating': initial_elo, 
+                'elo_carpet_rating': initial_elo, 
+                'elo_unknown_rating': initial_elo,
+                'max_elo_rating': initial_elo,
+                'min_elo_rating': initial_elo,
+                'n_games': 0,
+                'last_game': None,
+                'n_wins': 0,
+                'n_losses': 0,
+                'n_titles': 0
+            } for player_id in players_df['player_id']}
+
+        elo_history_list = []
+
+        year = ''
+        for _, m in tour_df.iterrows():
+            
+            if year != m['tour_year']:
+                # placeholder.write(f'    Simulating year {m['match_year']}...')
+                year = m['tour_year']
+
+            # Update elo ratings
+            best_of = m['best_of']
+            num_sets = m['num_sets']
+            
+            if s == 'delta':
+                Sw = 1
+                Sl = 0
+            
+            # S_{ij} = (P_{ij}+1) / num_sets + 2)
+            elif s == 'thirds': 
+                if best_of == 1 or num_sets == 1:    
+                    Sw = 2/3
+                    Sl = 1/3
+                elif best_of == 3:
+                    if num_sets == 2: # 2-0
+                        Sw = 3/4
+                        Sl = 1/4
+                    if num_sets == 3: # 2-1
+                        Sw = 3/5
+                        Sl = 2/5
+                elif best_of == 5:
+                    if num_sets == 3: # 3-0
+                        Sw = 4/5
+                        Sl = 1/5
+                    if num_sets == 4: # 3-1
+                        Sw = 4/6
+                        Sl = 2/6
+                    if num_sets == 5: # 3-2
+                        Sw = 4/7
+                        Sl = 3/7
+                else:
+                    raise Exception(f"Best_of must be 1, 3 or 5. {best_of} passed")
+            else:
+                raise Exception(f"Score must be 'delta' or 'thirds'. {s} passed.")
+
+            
+            # Algorisme per calcular elo-ratings
+            winner_id = m['winner_id']
+            loser_id = m['loser_id']
+            elo_surface = f'elo_{m['surface'].lower()}_rating'
+            match_date = m['tourney_date']
+            surface = m['surface']
+
+            old_wr =  all_players_dic[winner_id]['elo_rating']
+            old_lr = all_players_dic[loser_id]['elo_rating']
+            # Surface
+            old_slr = all_players_dic[winner_id][elo_surface]
+            old_swr = all_players_dic[loser_id][elo_surface]
+
+            mu_w = 1 / (1 + pow(10, -(old_wr - old_lr)/ksi))
+            mu_l = 1 / (1 + pow(10, -(old_lr - old_wr)/ksi))
+            # Surface
+            mu_sw = 1 / (1 + pow(10, -(old_swr - old_slr)/ksi))
+            mu_sl = 1 / (1 + pow(10, -(old_slr - old_swr)/ksi))
+
+            # Actualitzar els valors dels elo-ratings dels jugadors. 
+            winner_new_elo = old_wr + k*(Sw - mu_w)
+            loser_new_elo = old_lr + k*(Sl - mu_l)
+            all_players_dic[winner_id]['elo_rating'] = winner_new_elo
+            all_players_dic[loser_id]['elo_rating'] = loser_new_elo
+            # Surface
+            all_players_dic[winner_id][elo_surface] = old_swr + k*(Sw - mu_sw)
+            all_players_dic[loser_id][elo_surface] = old_slr + k*(Sl - mu_sl)
+
+            # Stats
+            all_players_dic[loser_id]['n_games'] += 1
+            all_players_dic[loser_id]['last_game'] = match_date
+            all_players_dic[winner_id]['n_games'] += 1
+            all_players_dic[winner_id]['last_game'] = match_date
+            all_players_dic[winner_id]['n_wins'] += 1
+            all_players_dic[loser_id]['n_losses'] += 1
+            if winner_new_elo > all_players_dic[winner_id]['max_elo_rating']:
+                all_players_dic[winner_id]['max_elo_rating'] = winner_new_elo
+            if loser_new_elo < all_players_dic[loser_id]['min_elo_rating']:
+                all_players_dic[loser_id]['min_elo_rating'] = loser_new_elo
+            if m['round'] == 'F':
+                all_players_dic[winner_id]['n_titles'] += 1
+
+            
+
+            assert all_players_dic[winner_id]['n_games'] == all_players_dic[winner_id]['n_wins'] + all_players_dic[winner_id]['n_losses'],\
+                f"Error: n_games != n_wins + n_losses -> {all_players_dic[winner_id]['n_games']} != {all_players_dic[winner_id]['n_wins']} + {all_players_dic[winner_id]['n_losses']}"
+
+            # Històric
+            winner_history = {
+                'player_id': winner_id,
+                'date': match_date,
+                'elo_rating': winner_new_elo
+            }
+            loser_history = {
+                'player_id': loser_id,
+                'date': match_date,
+                'elo_rating': loser_new_elo
+            }
+
+            elo_history_list.append(winner_history)
+            elo_history_list.append(loser_history)
+
+
+        players_simulated: pd.DataFrame = pd.DataFrame.from_dict(all_players_dic, orient='index')
+
+        ranking: pd.DataFrame = players_df.merge(players_simulated, how='left', on='player_id')\
+            .sort_values(by='elo_rating', ascending=False)\
+            .reset_index(drop=True)\
+            .drop(columns=['elo_unknown_rating'])\
+            .round(0)
+
+        # Filtrar mínim de partits
+        ranking_filtered = ranking[(ranking['n_games']>min_games)]
+        ranking_no_filtered = ranking.copy()
+
+        # Filtrar retirats
+        if rmv_retired:
+            ranking_filtered = ranking[(ranking['last_game'] > '2024-01-01')].reset_index(drop=True)
+
+        ranking_filtered['rank'] = ranking_filtered.index + 1
+
+        # Diccionari {player_id: rank} de ranking_filtered
+        rank_mapping = ranking_filtered.set_index('player_id')['rank'].to_dict()
+        # Assignem el rank al df no filtrat
+        ranking_no_filtered['rank'] = ranking_no_filtered['player_id'].map(rank_mapping)
+        # Els jugadors que no estan al ranking filtrat no tenen rank ('-')
+        ranking_no_filtered['rank'] = ranking_no_filtered['rank'].fillna(-1).astype(int)
+        ranking_no_filtered['rank'] = ranking_no_filtered['rank'].replace(-1, '-')
+
+
+        elo_history_df = pd.DataFrame(elo_history_list)\
+                            .astype({'date': 'datetime64[ns]'})
+        placeholder.empty()
+
+        return ranking_filtered, ranking_no_filtered, elo_history_df
+
+    def simulate_wta_tour(tour_df:pd.DataFrame, players_df:pd.DataFrame, k, ksi, s, initial_elo, min_games, year_to_simulate, rmv_retired): 
         assert tour_df.isna().sum().sum() == 0, f'nan values in tour_df\n{tour_df.isna().sum()}'
 
         total_matches = len(tour_df)
@@ -440,7 +610,7 @@ class Plots:
         mean_value = data['elo_rating'].mean()  # Calculate the mean
 
         histogram = alt.Chart(data).mark_bar().encode(
-            alt.X('elo_rating:Q', bin=alt.Bin(maxbins=40), title='elo_rating'),
+            alt.X('elo_rating:Q', bin=alt.Bin(maxbins=60), title='elo_rating'),
             alt.Y('count()', title='Frequència')
         ).properties(
             title=alt.TitleParams(text="Distribució de puntuacions", anchor='middle', fontSize=20, fontWeight='bold'),
