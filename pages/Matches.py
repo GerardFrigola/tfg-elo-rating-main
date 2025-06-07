@@ -31,7 +31,12 @@ with atp_tab:
         'tourney_level',
         'best_of',
         'round',
-        'num_sets']
+        'num_sets',
+        'winner_elo_before',
+        'loser_elo_before',
+        'winner_elo_after',
+        'loser_elo_after',
+        'higher_elo_won']
     ].set_index('match_id'))
 
     st.divider()
@@ -51,7 +56,12 @@ with wta_tab:
         'tourney_level',
         'best_of',
         'round',
-        'num_sets']
+        'num_sets',
+        'winner_elo_before',
+        'loser_elo_before',
+        'winner_elo_after',
+        'loser_elo_after',
+        'higher_elo_won']
     ].set_index('match_id'))
 
     st.divider()

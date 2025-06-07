@@ -69,10 +69,10 @@ class Simulation:
             ss['wta_selected_player_names'] = [n + ' ' + s for n, s in zip(names, surnames)]
         
 
-        assert ss['atp_matches_df'].isna().sum().sum() == 0, f'nan values in matches\n{ss['atp_matches_df'].isna().sum()}'
-        assert ss['atp_players_df'].isna().sum().sum() == 0, f'nan values in players\n{ss['atp_players_df'].isna().sum()}'
-        assert ss['wta_matches_df'].isna().sum().sum() == 0, f'nan values in matches\n{ss['wta_matches_df'].isna().sum()}'
-        assert ss['wta_players_df'].isna().sum().sum() == 0, f'nan values in players\n{ss['wta_players_df'].isna().sum()}'
+        assert ss['atp_matches_df'].isna().sum().sum() == 0, f"nan values in matches\n{ss['atp_matches_df'].isna().sum()}"
+        assert ss['atp_players_df'].isna().sum().sum() == 0, f"nan values in players\n{ss['atp_players_df'].isna().sum()}"
+        assert ss['wta_matches_df'].isna().sum().sum() == 0, f"nan values in matches\n{ss['wta_matches_df'].isna().sum()}"
+        assert ss['wta_players_df'].isna().sum().sum() == 0, f"nan values in players\n{ss['wta_players_df'].isna().sum()}"
 
 
     def simulate_atp_tour(tour_df:pd.DataFrame, players_df:pd.DataFrame, k, ksi, s, initial_elo, min_games, year_to_simulate, rmv_retired): 
@@ -106,8 +106,14 @@ class Simulation:
 
         elo_history_list = []
 
+        tour_df["winner_elo_before"] = None
+        tour_df["loser_elo_before"] = None
+        tour_df["winner_elo_after"] = None
+        tour_df["loser_elo_after"] = None
+        tour_df["higher_elo_won"] = None
+
         year = ''
-        for _, m in tour_df.iterrows():
+        for index, m in tour_df.iterrows():
             
             if year != m['tour_year']:
                 # placeholder.write(f'    Simulating year {m['match_year']}...')
@@ -152,7 +158,7 @@ class Simulation:
             # Algorisme per calcular elo-ratings
             winner_id = m['winner_id']
             loser_id = m['loser_id']
-            elo_surface = f'elo_{m['surface'].lower()}_rating'
+            elo_surface = f'elo_{m["surface"].lower()}_rating'
             match_date = m['tourney_date']
             surface = m['surface']
 
@@ -191,7 +197,12 @@ class Simulation:
             if m['round'] == 'F':
                 all_players_dic[winner_id]['n_titles'] += 1
 
-            
+            # Update dataframe info
+            tour_df.at[index, "winner_elo_before"] = old_wr
+            tour_df.at[index, "loser_elo_before"] = old_lr
+            tour_df.at[index, "winner_elo_after"] = winner_new_elo
+            tour_df.at[index, "loser_elo_after"] = loser_new_elo
+            tour_df.at[index, "higher_elo_won"] = int(old_wr > old_lr)
 
             assert all_players_dic[winner_id]['n_games'] == all_players_dic[winner_id]['n_wins'] + all_players_dic[winner_id]['n_losses'],\
                 f"Error: n_games != n_wins + n_losses -> {all_players_dic[winner_id]['n_games']} != {all_players_dic[winner_id]['n_wins']} + {all_players_dic[winner_id]['n_losses']}"
@@ -243,7 +254,7 @@ class Simulation:
                             .astype({'date': 'datetime64[ns]'})
         placeholder.empty()
 
-        return ranking_filtered, ranking_no_filtered, elo_history_df
+        return tour_df.set_index('match_id', drop=False), ranking_filtered, ranking_no_filtered, elo_history_df
 
     def simulate_wta_tour(tour_df:pd.DataFrame, players_df:pd.DataFrame, k, ksi, s, initial_elo, min_games, year_to_simulate, rmv_retired): 
         assert tour_df.isna().sum().sum() == 0, f'nan values in tour_df\n{tour_df.isna().sum()}'
@@ -276,8 +287,14 @@ class Simulation:
 
         elo_history_list = []
 
+        tour_df["winner_elo_before"] = None
+        tour_df["loser_elo_before"] = None
+        tour_df["winner_elo_after"] = None
+        tour_df["loser_elo_after"] = None
+        tour_df["higher_elo_won"] = None
+
         year = ''
-        for _, m in tour_df.iterrows():
+        for index, m in tour_df.iterrows():
             
             if year != m['tour_year']:
                 # placeholder.write(f'    Simulating year {m['match_year']}...')
@@ -322,7 +339,7 @@ class Simulation:
             # Algorisme per calcular elo-ratings
             winner_id = m['winner_id']
             loser_id = m['loser_id']
-            elo_surface = f'elo_{m['surface'].lower()}_rating'
+            elo_surface = f'elo_{m["surface"].lower()}_rating'
             match_date = m['tourney_date']
             surface = m['surface']
 
@@ -361,7 +378,12 @@ class Simulation:
             if m['round'] == 'F':
                 all_players_dic[winner_id]['n_titles'] += 1
 
-            
+            # Update dataframe info
+            tour_df.at[index, "winner_elo_before"] = old_wr
+            tour_df.at[index, "loser_elo_before"] = old_lr
+            tour_df.at[index, "winner_elo_after"] = winner_new_elo
+            tour_df.at[index, "loser_elo_after"] = loser_new_elo
+            tour_df.at[index, "higher_elo_won"] = int(old_wr > old_lr)
 
             assert all_players_dic[winner_id]['n_games'] == all_players_dic[winner_id]['n_wins'] + all_players_dic[winner_id]['n_losses'],\
                 f"Error: n_games != n_wins + n_losses -> {all_players_dic[winner_id]['n_games']} != {all_players_dic[winner_id]['n_wins']} + {all_players_dic[winner_id]['n_losses']}"
@@ -413,7 +435,7 @@ class Simulation:
                             .astype({'date': 'datetime64[ns]'})
         placeholder.empty()
 
-        return ranking_filtered, ranking_no_filtered, elo_history_df
+        return tour_df.set_index('match_id', drop=False), ranking_filtered, ranking_no_filtered, elo_history_df
 
 
 class Filter:
