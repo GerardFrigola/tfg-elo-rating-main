@@ -35,7 +35,7 @@ with st.sidebar:
     years = list(range(1970, 2025))
     years.insert(0, 'Tots')
     year_to_simulate = st.selectbox('Selecciona un any per simular-lo', options=years, index=0, on_change=values_changed, key='year_to_simulate')
-    start_year = st.number_input('Any d\'inici', min_value=1970, max_value=2024, step=1, value=1970, placeholder='Enter a integer', on_change=values_changed)
+    #start_year = st.number_input('Any d\'inici', min_value=1970, max_value=2024, step=1, value=1970, placeholder='Enter a integer', on_change=values_changed)
 # ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
